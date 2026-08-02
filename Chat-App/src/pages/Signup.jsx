@@ -1,13 +1,14 @@
 import { useState } from "react";
 import app from "../firebase/firebase.config";
 
-function Register(){
+function Signup(){
 
 	
 	return(
 		<>
+			<title>Sign Up | ReiChat</title>
 		</>
 	);
 }
 
-export default Register;
+export default Signup;
