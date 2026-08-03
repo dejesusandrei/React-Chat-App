@@ -13,14 +13,12 @@ import contactHover from '../assets/contact-hover.png'
 import contact from '../assets/contact.png'
 
 
-export default function Sidebar({activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen}) {
+export default function Sidebar({activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen, isMobile}) {
 	const { user } = useContext(AuthContext);
 
 	return(
 		<>
-			<aside className={`h-screen bg-zinc-900 text-white fixed top-0 left-0 px-3 py-4 flex flex-col font-roboto  ${
-				isSidebarOpen ? "w-66" : "w-20"
-			}`}>
+			<aside className={`h-screen bg-zinc-900 text-white fixed top-0 left-0 px-3 py-4 flex flex-col font-roboto  ${isMobile ? 'hidden w-0' : isSidebarOpen ? "w-66" : "w-20"}`}>
 				<div className="flex flex-col items-center justify-between h-full">
 					
 					<div className="w-full flex flex-col gap-y-1">
