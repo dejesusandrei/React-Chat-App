@@ -103,7 +103,7 @@ export default function Sidebar({activeTab, setActiveTab, isSidebarOpen, setIsSi
 
 					</div>
 
-					<div className={isSidebarOpen ? "w-full flex items-center gap-2" : "w-full flex flex-col items-center gap-2"}>
+					<div className={`w-full flex ${isSidebarOpen ? 'items-center gap-2' : 'flex-col items-center gap-1'}`}>
 						<div className={isSidebarOpen ? 'flex gap-2 items-center grow h-12.5 p-2 hover:bg-zinc-800 rounded-md cursor-pointer' : 'flex gap-2 items-center grow h-12.5 p-2rounded-md cursor-pointer'}>
 							<div className="image flex justify-center items-center w-9 h-9 rounded-full bg-violet-400">
 								{user?.displayName[0].toUpperCase()}
