@@ -1,10 +1,73 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { getDatabase, ref, set } from "firebase/database";
+import SuccessModal from "../components/SuccessModal";
 import app from "../firebase/firebase.config";
 import '../index.css'
 import backIcon from '../assets/back-icon.png'
 
 function Signup(){
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
+
+	const [isPasswordMatch, setIsPasswordMatch] = useState(false);
+	const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+	const navigate = useNavigate();
+
+	const auth = getAuth(app);
+  const db = getDatabase(app);
+	
+	async function handleSignup(event) {
+		event.preventDefault();
+		
+		if (password !== confirmPassword) {
+			setIsPasswordMatch(true);
+			return;
+		}
+
+		setIsPasswordMatch(false);
+		try{
+			// 1. Create account
+      const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+      const user = userCredential.user;
+
+      // 2. Save the user's name in Authentication
+      await updateProfile(user, {
+        displayName: `${firstName} ${lastName}`,
+      });
+
+			// 3. Save user info in Realtime Database
+			await set(ref(db, `users/${user.uid}`), {
+				uid: user.uid,
+				firstName: firstName,
+				lastName: lastName,
+				email: email,
+				createdAt: new Date().toISOString(),
+			});
+
+      const fullName = `${firstName} ${lastName}`;
+
+			localStorage.setItem("user", JSON.stringify({
+				uid: user.uid,
+				fullName: fullName,
+				email: email,
+			}));
+
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPassword("");
+			setConfirmPassword("");
+      setIsPasswordMatch(false);
+			setIsSuccessModalOpen(true);
+		}catch(error){
+			alert(`${error.code}\n${error.message}`);
+		}
+	}
 
 	
 	return(
@@ -23,26 +86,42 @@ function Signup(){
 							<p className="text-gray-600 mt-1">SJoin ReiChat and start connecting with your friends</p>
 						</div>
 
-						<form className="mt-8 flex flex-col w-full gap-y-4.5">
+						<form className="mt-8 flex flex-col w-full gap-y-4.5" onSubmit={handleSignup} onKeyDown={(e) => {
+							if (e.key === 'Enter') {
+								e.preventDefault();
+								handleSignup(e);
+							}
+						}}>
 							<div>
-								<input type="text" placeholder="First Name" className="w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700" required/>
+								<input onChange={(e) => setFirstName(e.target.value)} value={firstName} type="text" placeholder="First Name" className="w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700" required/>
 								{/* <p className="text-red-500 mt-1 text-sm">Invalid email or password</p> */}
 							</div>
 							<div>
-								<input type="text" placeholder="Last Name" className="w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700" required/>
+								<input onChange={(e) => setLastName(e.target.value)} value={lastName} type="text" placeholder="Last Name" className="w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700" required/>
 								{/* <p className="text-red-500 mt-1 text-sm">Invalid email or password</p> */}
 							</div>
 							<div>
-								<input type="email" placeholder="Email" className="w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700" required/>
+								<input onChange={(e) => setEmail(e.target.value)} value={email} type="email" placeholder="Email" className="w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700" required/>
 								{/* <p className="text-red-500 mt-1 text-sm">Invalid email or password</p> */}
 							</div>
 							<div>
-								<input type="password" placeholder="Password" className="w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700" required/>
+								<input onChange={(e) => {
+									setPassword(e.target.value)
+									if (isPasswordMatch) setIsPasswordMatch(false);
+								}}
+								value={password}
+									type="password" placeholder="Password" className="w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700" required/>
 								{/* <p className="text-red-500 mt-1 text-sm">Invalid email or password</p> */}
 							</div>
 							<div>
-								<input type="password" placeholder="Confirm Password" className="w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700" required/>
-								{/* <p className="text-red-500 mt-1 text-sm">Passwords do not match</p> */}
+								<input onChange={(e) => {
+									setConfirmPassword(e.target.value)
+									if (isPasswordMatch) setIsPasswordMatch(false);
+								}} 
+								value={confirmPassword}
+								type="password" placeholder="Confirm Password" 
+								className={`w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700 ${isPasswordMatch ? 'border-red-500' : 'border-gray-400'}`} required/>
+								{isPasswordMatch && (<p className="text-red-500 text-sm mt-1">Passwords do not match.</p>)}
 							</div>
 							<button type="submit" className="w-full bg-gray-700 text-white py-2 px-4 mt-2 rounded-md hover:bg-gray-600 transition-colors cursor-pointer">Create Account</button>
 						</form>
@@ -53,6 +132,13 @@ function Signup(){
 
 					</div>
 				</section>
+				<SuccessModal 
+          isOpen={isSuccessModalOpen} 
+					onClose={() => setIsSuccessModalOpen(false)} 
+					onDashboard={() => navigate('/')} 
+					title="Account created successfully!" 
+					message="Welcome to ReiChat your account has been created and you can now start connecting with your friends."
+        />
       </main>
 		</>
 	);
