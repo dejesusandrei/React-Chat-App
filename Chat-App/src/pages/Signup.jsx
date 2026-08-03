@@ -37,25 +37,18 @@ function Signup(){
 
       // 2. Save the user's name in Authentication
       await updateProfile(user, {
-        displayName: `${firstName} ${lastName}`,
+        displayName: `${firstName.trim()} ${lastName.trim()}`,
       });
 
 			// 3. Save user info in Realtime Database
 			await set(ref(db, `users/${user.uid}`), {
 				uid: user.uid,
-				firstName: firstName,
-				lastName: lastName,
-				email: email,
+				firstName: firstName.trim(),
+				lastName: lastName.trim(),
+				email: email.trim(),
+				password: confirmPassword.trim(),
 				createdAt: new Date().toISOString(),
 			});
-
-      const fullName = `${firstName} ${lastName}`;
-
-			localStorage.setItem("user", JSON.stringify({
-				uid: user.uid,
-				fullName: fullName,
-				email: email,
-			}));
 
       setFirstName("");
       setLastName("");
@@ -64,8 +57,9 @@ function Signup(){
 			setConfirmPassword("");
       setIsPasswordMatch(false);
 			setIsSuccessModalOpen(true);
+			console.log(userCredential.user);
 		}catch(error){
-			alert(`${error.code}\n${error.message}`);
+			console.error(`${error.code}\n${error.message}`);
 		}
 	}
 
@@ -135,7 +129,7 @@ function Signup(){
 				<SuccessModal 
           isOpen={isSuccessModalOpen} 
 					onClose={() => setIsSuccessModalOpen(false)} 
-					onDashboard={() => navigate('/')} 
+					onDashboard={() => navigate('/home')} 
 					title="Account created successfully!" 
 					message="Welcome to ReiChat your account has been created and you can now start connecting with your friends."
         />

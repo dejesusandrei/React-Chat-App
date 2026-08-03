@@ -9,6 +9,7 @@ import logo from '../assets/logo.png'
 function SignIn(){
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [error, setError] = useState("");
 
 	const auth = getAuth(app);
 	const db = getDatabase(app);
@@ -17,18 +18,24 @@ function SignIn(){
 	async function handleSignIn(event) {
 		event.preventDefault();
 		try {
-			const userCredential = await signInWithEmailAndPassword(auth,email,password);
+			const userCredential = await signInWithEmailAndPassword(
+				auth,
+				email.trim(),
+				password
+			);
+
 			const user = userCredential.user;
-			
 			const snapShot = await get(ref(db, `users/${user.uid}`));
 
 			if(snapShot.exists()){
 				const userData = snapShot.val();
-				localStorage.setItem('isLoggedIn', 'true');
-				localStorage.setItem('currentUser', JSON.stringify(userData));
+				navigate('/home');
 			}
+			setEmail("");
+			setPassword("");
+
 		} catch (error) {
-			alert(`${error.code}\n${error.message}`);
+			setError("Invalid email or password.");
 		}
 	}
 	
@@ -46,25 +53,25 @@ function SignIn(){
 							<p className="text-gray-600 mt-1">Sign in to continue chatting with your friends</p>
 						</div>
 
-						<form className="mt-8 flex flex-col w-full gap-y-4.5" onSubmit={handleSignIn} onKeyDown={(e) => {
-							if (e.key === 'Enter') {
-								e.preventDefault();
-								handleSignIn(e);
-							}
-						}}>
+						<form className="mt-8 flex flex-col w-full gap-y-4.5" onSubmit={handleSignIn}>
 							<div>
 								<input
 								value={email}
-								onChange={(e) => setEmail(e.target.value)}
+								onChange={(e) => {
+										setEmail(e.target.value);
+										setError("");
+								}}
 								type="email" placeholder="Email" className="w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700" required/>
-								{/* <p className="text-red-500 mt-1 text-sm">Invalid email or password</p> */}
 							</div>
 							<div>
 								<input
 								value={password}
-								onChange={(e) => setPassword(e.target.value)}
+								onChange={(e) => {
+										setPassword(e.target.value);
+										setError("");
+								}}
 								type="password" placeholder="Password" className="w-full rounded-md border border-gray-400 px-3 py-2 focus:outline-1 focus:outline-gray-700" required/>
-								{/* <p className="text-red-500 mt-1 text-sm">Invalid email or password</p> */}
+								{error && (<p className="text-red-500 text-sm mt-2">{error}</p>)}
 								<div className="flex justify-end">
 									<Link to="/forgot-password" className="text-blue-500 text-sm mt-2 hover:underline">Forgot password?</Link>
 								</div>

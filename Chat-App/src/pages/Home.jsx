@@ -3,7 +3,7 @@
 function Home(){
 	return(
 		<>
-			<title>Home | ReiChat</title>
+			<title>ReiChat</title>
 		</>
 	);
 }
