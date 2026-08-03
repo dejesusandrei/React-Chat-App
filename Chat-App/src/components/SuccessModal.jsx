@@ -22,7 +22,7 @@ export default function SuccessModal({ isOpen, onClose,onDashboard, title, messa
           <button
             type="button"
             onClick={onDashboard || onClose}
-            className="w-full rounded-md bg-gray-800 py-2 px-4 text-sm font-medium text-white hover:bg-gray-700 cursor-pointer"
+            className="w-full rounded-md bg-zinc-900 py-2 px-4 text-sm font-medium text-white hover:bg-zinc-700 cursor-pointer"
           >
             Go to Dashboard
           </button>

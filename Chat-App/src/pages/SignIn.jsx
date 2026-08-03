@@ -76,7 +76,7 @@ function SignIn(){
 									<Link to="/forgot-password" className="text-blue-500 text-sm mt-2 hover:underline">Forgot password?</Link>
 								</div>
 							</div>
-							<button type="submit" className="w-full bg-gray-700 text-white py-2 px-4 mt-2 rounded-md hover:bg-gray-600 transition-colors cursor-pointer">Sign In</button>
+							<button type="submit" className="w-full bg-gray-900 text-white py-2 px-4 mt-2 rounded-md hover:bg-gray-700 transition-colors cursor-pointer">Sign In</button>
 						</form>
 
 						<div className="mt-8 w-full border-b border-gray-400 relative"><p className="absolute font-roboto text-center text-gray-600 w-12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white">or</p></div>
