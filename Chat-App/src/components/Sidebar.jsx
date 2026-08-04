@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthProvider";
 import '../index.css'
 
 // icons
-import logoWhite from '../assets/logo-white.png'
+import logoWhite from '../assets/logo/logo-white.png'
 import sidebar from '../assets/sidebar.svg'
 import chatHover from '../assets/chat-hover.svg'
 import chat from '../assets/chat.svg'
@@ -23,10 +23,9 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile}) {
 				<div className="flex flex-col items-center justify-between h-full">
 					
 					<div className="w-full flex flex-col gap-y-1">
-
 						{/* LOGO */}
-						<div className='flex items-center grow h-15.5  rounded-md cursor-pointer mb-5'>
-							<div className="image flex  w-19">
+						{/* <div className='flex justify-center items-center grow h-15.5  rounded-md cursor-pointer mb-5'>
+							<div className="image flex justify-center items-center  w-9">
 								<img className="w-full" src={logoWhite} alt="ReiChat icon" />
 							</div>
 							{isSidebarOpen && (
@@ -34,7 +33,7 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile}) {
 									<p className='text-white text-[18px] font-mono font-semibold'>ReiChats</p>
 								</div>
 							)}
-						</div>
+						</div> */}
 
 						<NavLink to="/home/chats" className={({ isActive }) =>
 							`flex items-center h-12.5 px-3 rounded-md ${isSidebarOpen? "justify-start gap-3": "justify-center"} 
@@ -75,7 +74,6 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile}) {
 									</>
 							)}
 						</NavLink>
-
 					</div>
 
 					<div className={`w-full flex ${isSidebarOpen ? 'items-center gap-2' : 'flex-col items-center gap-1'}`}>

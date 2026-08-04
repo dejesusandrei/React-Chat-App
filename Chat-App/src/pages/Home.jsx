@@ -34,6 +34,7 @@ function Home(){
 			
 			<main className={`h-dvh bg-zinc-950 py-3.5 flex ${isMobile ? 'ml-0' : isSidebarOpen ? "ml-66" : "ml-20"}`}>
 				<aside className="hidden lg:block w-166 ml-3 p-4 rounded-lg bg-zinc-800">
+					{/* Outlet renders <Chats /> || <Contacts/> */}
 					<Outlet/>
 				</aside>
 
