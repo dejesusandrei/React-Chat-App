@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { NavLink } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider";
 import '../index.css'
 
@@ -13,7 +14,7 @@ import contactHover from '../assets/contact-hover.png'
 import contact from '../assets/contact.png'
 
 
-export default function Sidebar({activeTab, setActiveTab, TABS, isSidebarOpen, setIsSidebarOpen, isMobile}) {
+export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile}) {
 	const { user } = useContext(AuthContext);
 
 	return(
@@ -35,47 +36,45 @@ export default function Sidebar({activeTab, setActiveTab, TABS, isSidebarOpen, s
 							)}
 						</div>
 
-						<div className={`flex items-center grow h-12.5 py-2 px-3 rounded-md cursor-pointer 
-								${isSidebarOpen? "justify-start gap-3": "justify-center"}
-								${activeTab === "chats"? "bg-zinc-800": "hover:bg-zinc-800"}`}
-								onClick={() => setActiveTab(TABS.CHATS)}>
-							<div className={`image flex justify-center items-center ${isSidebarOpen ? 'w-7 h-7' : 'w-6 h-6'}`}>
-								<img src={activeTab === 'chats' ? chatHover : chat} alt="Chat icon" />
-							</div>
-							{isSidebarOpen && (
-								<div className="flex flex-col justify-center items-center">
-									<p className={activeTab === 'chats' ? 'text-white text-[16px] font-semibold' : 'text-gray-300 text-[16px] font-semibold'}>Chats</p>
-								</div>
+						<NavLink to="/home/chats" className={({ isActive }) =>
+							`flex items-center h-12.5 px-3 rounded-md ${isSidebarOpen? "justify-start gap-3": "justify-center"} 
+							${isActive? "bg-zinc-800": "hover:bg-zinc-800"}`}>
+								{({ isActive }) => (
+									<>
+										<div className={`flex justify-center items-center ${isSidebarOpen ? "w-7 h-7" : "w-6 h-6"}`}>
+												<img src={isActive ? chatHover : chat} alt="Chats" />
+										</div>
+										{isSidebarOpen && (<p className={isActive ? "text-white font-semibold" : "text-gray-300 font-semibold"}>Chats</p>)}
+									</>
 							)}
-						</div>
+						</NavLink>
 
-						<div className={`flex items-center grow h-12.5 py-2 px-3 rounded-md cursor-pointer 
-								${isSidebarOpen? "justify-start gap-3": "justify-center"}
-								${activeTab === "contacts"? "bg-zinc-800": "hover:bg-zinc-800"}`}
-								onClick={() => setActiveTab(TABS.CONTACTS)}>
-							<div className={`image flex justify-center items-center ${isSidebarOpen ? 'w-7 h-7' : 'w-6 h-6'}`}>
-								<img src={activeTab === 'contacts' ? contactHover : contact} alt="Contact icon" />
-							</div>
-							{isSidebarOpen && (
-								<div className="flex flex-col justify-center items-center">
-									<p className={activeTab === 'contacts' ? 'text-white text-[16px] font-semibold' : 'text-gray-300 text-[16px] font-semibold'}>Contacts</p>
-								</div>
+						<NavLink to="/home/contacts" className={({ isActive }) =>
+							`flex items-center h-12.5 px-3 rounded-md ${isSidebarOpen? "justify-start gap-3": "justify-center"} 
+							${isActive? "bg-zinc-800": "hover:bg-zinc-800"}`}>
+							{({ isActive }) => (
+									<>
+										<div className={`flex justify-center items-center ${isSidebarOpen ? "w-7 h-7" : "w-6 h-6"}`}>
+												<img src={isActive ? contactHover : contact} alt="Contacts" />
+										</div>
+										{isSidebarOpen && (<p className={isActive ? "text-white font-semibold" : "text-gray-300 font-semibold"}>Contacts</p>)}
+									</>
 							)}
-						</div>
+						</NavLink>
 
-						<div className={`flex items-center grow h-12.5 py-2 px-3 rounded-md cursor-pointer 
-								${isSidebarOpen? "justify-start gap-3": "justify-center"}
-								${activeTab === "notifications"? "bg-zinc-800": "hover:bg-zinc-800"}`}
-								onClick={() => setActiveTab(TABS.NOTIFICATIONS)}>
-							<div className={`image flex justify-center items-center ${isSidebarOpen ? 'w-7 h-7' : 'w-6 h-6'}`}>
-								<img src={activeTab === 'notifications' ? notifHover : notif} alt="Notification icon" />
-							</div>
-							{isSidebarOpen && (
-								<div className="flex flex-col justify-center items-center">
-									<p className={activeTab === 'notifications' ? 'text-white text-[16px] font-semibold' : 'text-gray-300 text-[16px] font-semibold'}>Notifications</p>
-								</div>
+						<NavLink to="/home/notifications" className={({ isActive }) =>
+							`flex items-center h-12.5 px-3 rounded-md ${isSidebarOpen? "justify-start gap-3": "justify-center"} 
+							${isActive? "bg-zinc-800": "hover:bg-zinc-800"}`}>
+								{/* Gamitin ang children callback ng NavLink */}
+							{({ isActive }) => (
+									<>
+										<div className={`flex justify-center items-center ${isSidebarOpen ? "w-7 h-7" : "w-6 h-6"}`}>
+												<img src={isActive ? notifHover : notif} alt="Notifications" />
+										</div>
+										{isSidebarOpen && (<p className={isActive ? "text-white font-semibold" : "text-gray-300 font-semibold"}>Notifications</p>)}
+									</>
 							)}
-						</div>
+						</NavLink>
 
 					</div>
 
