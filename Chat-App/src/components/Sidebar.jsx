@@ -13,7 +13,7 @@ import contactHover from '../assets/contact-hover.png'
 import contact from '../assets/contact.png'
 
 
-export default function Sidebar({activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen, isMobile}) {
+export default function Sidebar({activeTab, setActiveTab, TABS, isSidebarOpen, setIsSidebarOpen, isMobile}) {
 	const { user } = useContext(AuthContext);
 
 	return(
@@ -36,17 +36,9 @@ export default function Sidebar({activeTab, setActiveTab, isSidebarOpen, setIsSi
 						</div>
 
 						<div className={`flex items-center grow h-12.5 py-2 px-3 rounded-md cursor-pointer 
-								${
-									isSidebarOpen
-										? "justify-start gap-3"
-										: "justify-center"
-								}
-								${
-									activeTab === "chats"
-										? "bg-zinc-800"
-										: "hover:bg-zinc-800"
-								}`}
-						>
+								${isSidebarOpen? "justify-start gap-3": "justify-center"}
+								${activeTab === "chats"? "bg-zinc-800": "hover:bg-zinc-800"}`}
+								onClick={() => setActiveTab(TABS.CHATS)}>
 							<div className={`image flex justify-center items-center ${isSidebarOpen ? 'w-7 h-7' : 'w-6 h-6'}`}>
 								<img src={activeTab === 'chats' ? chatHover : chat} alt="Chat icon" />
 							</div>
@@ -58,16 +50,9 @@ export default function Sidebar({activeTab, setActiveTab, isSidebarOpen, setIsSi
 						</div>
 
 						<div className={`flex items-center grow h-12.5 py-2 px-3 rounded-md cursor-pointer 
-								${
-									isSidebarOpen
-										? "justify-start gap-3"
-										: "justify-center"
-								}
-								${
-									activeTab === "contacts"
-										? "bg-zinc-800"
-										: "hover:bg-zinc-800"
-								}`}>
+								${isSidebarOpen? "justify-start gap-3": "justify-center"}
+								${activeTab === "contacts"? "bg-zinc-800": "hover:bg-zinc-800"}`}
+								onClick={() => setActiveTab(TABS.CONTACTS)}>
 							<div className={`image flex justify-center items-center ${isSidebarOpen ? 'w-7 h-7' : 'w-6 h-6'}`}>
 								<img src={activeTab === 'contacts' ? contactHover : contact} alt="Contact icon" />
 							</div>
@@ -79,16 +64,9 @@ export default function Sidebar({activeTab, setActiveTab, isSidebarOpen, setIsSi
 						</div>
 
 						<div className={`flex items-center grow h-12.5 py-2 px-3 rounded-md cursor-pointer 
-								${
-									isSidebarOpen
-										? "justify-start gap-3"
-										: "justify-center"
-								}
-								${
-									activeTab === "notifications"
-										? "bg-zinc-800"
-										: "hover:bg-zinc-800"
-								}`}>
+								${isSidebarOpen? "justify-start gap-3": "justify-center"}
+								${activeTab === "notifications"? "bg-zinc-800": "hover:bg-zinc-800"}`}
+								onClick={() => setActiveTab(TABS.NOTIFICATIONS)}>
 							<div className={`image flex justify-center items-center ${isSidebarOpen ? 'w-7 h-7' : 'w-6 h-6'}`}>
 								<img src={activeTab === 'notifications' ? notifHover : notif} alt="Notification icon" />
 							</div>
