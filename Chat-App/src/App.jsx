@@ -7,8 +7,8 @@ import Home from './pages/Home'
 import ProtectedRoute from './components/ProtectedRoute'
 
 import Chats from "./components/Chat/Chats";
-import Contacts from "./components/Contacts";
-import Notifications from "./components/Notifications";
+import Contacts from "./components/Contact/Contacts";
+import Notifications from "./components/Notification/Notifications";
 
 function App() {
     return(

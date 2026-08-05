@@ -3,6 +3,8 @@ import { NavLink } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider";
 import '../index.css'
 
+import { getDarkColor } from "../utility/getRandomDarkColor";
+
 // icons
 import logoWhite from '../assets/logo/logo-white.png'
 import sidebar from '../assets/sidebar.svg'
@@ -16,7 +18,6 @@ import contact from '../assets/contact.png'
 
 export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile}) {
 	const { user } = useContext(AuthContext);
-
 	return(
 		<>
 			<aside className={`h-screen bg-zinc-900 text-white fixed top-0 left-0 px-3 py-4 flex flex-col font-roboto  ${isMobile ? 'hidden w-0' : isSidebarOpen ? "w-66" : "w-20"}`}>
@@ -78,7 +79,8 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile}) {
 
 					<div className={`w-full flex ${isSidebarOpen ? 'items-center gap-2' : 'flex-col items-center gap-1'}`}>
 						<div className={isSidebarOpen ? 'flex gap-2 items-center grow h-12.5 p-2 hover:bg-zinc-800 rounded-md cursor-pointer' : 'flex gap-2 items-center grow h-12.5 p-2rounded-md cursor-pointer'}>
-							<div className="image flex justify-center items-center w-9 h-9 rounded-full bg-violet-400">
+							<div className="image flex justify-center items-center w-9 h-9 rounded-full "
+							style={{ backgroundColor: getDarkColor(user?.uid) }}>
 								{user?.displayName[0].toUpperCase()}
 							</div>
 							{isSidebarOpen && (

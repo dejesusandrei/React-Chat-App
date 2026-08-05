@@ -4,8 +4,8 @@ import { Outlet } from "react-router-dom";
 import Chats from "../components/Chat/Chats";
 import Sidebar from "../components/Sidebar";
 import useWindowSize from '../hooks/useWindowSize'
-import Contacts from "../components/Contacts";
-import Notifications from "../components/Notifications";
+import Contacts from "../components/Contact/Contacts";
+import Notifications from "../components/Notification/Notifications";
 
 function Home(){
 	const [isSidebarOpen, setIsSidebarOpen] = useState(() => {

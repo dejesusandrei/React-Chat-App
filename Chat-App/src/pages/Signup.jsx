@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
+import { getRandomDarkColor } from "../utility/getRandomDarkColor";
 import SuccessModal from "../components/SuccessModal";
 import app from "../firebase/firebase.config";
 import '../index.css'
@@ -47,6 +48,7 @@ function Signup(){
 				lastName: lastName.trim(),
 				email: email.trim(),
 				password: confirmPassword.trim(),
+				avatarColor: getRandomDarkColor(),
 				createdAt: new Date().toISOString(),
 			});
 
@@ -57,7 +59,6 @@ function Signup(){
 			setConfirmPassword("");
       setIsPasswordMatch(false);
 			setIsSuccessModalOpen(true);
-			console.log(userCredential.user);
 		}catch(error){
 			console.error(`${error.code}\n${error.message}`);
 		}
