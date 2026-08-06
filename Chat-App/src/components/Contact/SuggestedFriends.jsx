@@ -11,10 +11,11 @@ export default function SuggestedFriends(){
 	const { user } = useContext(AuthContext);
 	const [users, setUsers] = useState([]);
 	const [sentRequests, setSentRequests] = useState({});
-	const [laodingUid, setLoadingUid] = useState(null);
+	const [loadingUid, setLoadingUid] = useState(null);
 	const db = getDatabase(app);
 
 	useEffect(() =>{
+		if (!user?.uid) return;
 		const usersRef = ref(db, "users");
 
 		const unsubscribe = onValue(usersRef, (snapshot) =>{
@@ -53,19 +54,19 @@ export default function SuggestedFriends(){
 		setLoadingUid(targetUid);
 
 		const requestRefSender = ref(db, `friendRequests/${user.uid}/${targetUid}`);
-		const requestRefReceiver = ref(db, `friendRequests/${targetUid}/${user.uidgetUid}`);
+		const requestRefReceiver = ref(db, `friendRequests/${targetUid}/${user.uid}`);
 
 		try {
-			const isAlreadySent = !!sentRequests[targetUid];
+			const isAlreadySent = sentRequests[targetUid]?.status === "sent";
+			const updates = {};
+
 			if (isAlreadySent) {
-				const updates = {};
 				updates[`friendRequests/${user.uid}/${targetUid}`] = null;
 				updates[`friendRequests/${targetUid}/${user.uid}`] = null;
 				await update(ref(db), updates);
 			} else {
 				// Kapag 'Add Friend' - I-save sa Firebase database
 				const timestamp = Date.now();
-				const updates = {};
 				updates[`friendRequests/${user.uid}/${targetUid}`] = { status: "sent", timestamp };
 				updates[`friendRequests/${targetUid}/${user.uid}`] = { status: "received", timestamp };
 				await update(ref(db), updates);
@@ -87,8 +88,8 @@ export default function SuggestedFriends(){
 					</div>
 
 					{suggestedFriends.map((friend) =>{
-						const isRequested = !!sentRequests[friend?.uid];
-						const isLoading = laodingUid === friend?.uid;
+						const isRequested = sentRequests[friend?.uid]?.status === "sent";
+						const isLoading = loadingUid === friend?.uid;
 
 						return(
 							<div key={friend?.uid} className= 'flex gap-2.5 items-center grow h-12.5'>
@@ -106,7 +107,7 @@ export default function SuggestedFriends(){
                   isRequested ? 'bg-zinc-700 text-white': 'bg-zinc-100 dark:bg-zinc-100'}`}>
 									{/* <div className='flex justify-center items-center'><img className='w-5 h-5' src={addFriend} alt="Add Friend"/></div> */}
 									<p className={`text-[14px] font-roboto font-semibold ${isRequested ? 'text-white' : 'text-zinc-900' }`}>
-                    {isLoading ? 'Processing' : isRequested ? 'Cancel Request' : 'Add friend'}
+                    {isRequested ? 'Cancel Request' : 'Add friend'}
                   </p>
 								</button>
 							</div>
