@@ -10,14 +10,16 @@ import addFriend from '../../assets/add-friend.png'
 export default function SuggestedFriends(){
 	const { user } = useContext(AuthContext);
 	const [users, setUsers] = useState([]);
+	const [userFriends, setUserFriends] = useState({});
 	const [sentRequests, setSentRequests] = useState({});
 	const [loadingUid, setLoadingUid] = useState(null);
 	const db = getDatabase(app);
 
 	useEffect(() =>{
 		if (!user?.uid) return;
-		const usersRef = ref(db, "users");
 
+		// Get all users
+		const usersRef = ref(db, "users");
 		const unsubscribe = onValue(usersRef, (snapshot) =>{
 			if(snapshot.exists()){
 				const data = snapshot.val();
@@ -29,6 +31,13 @@ export default function SuggestedFriends(){
 			}
 		});
 
+		// Get Friends
+		const friendsRef = ref(db, `friends/${user.uid}`);
+		const unsubscribeFriends = onValue(friendsRef, (snapshot) =>{
+			setUserFriends(snapshot.exists() ? snapshot.val() : {})
+		});
+
+		// Get all request
 		const requestRef = ref(db, `friendRequests/${user.uid}`);
 		const unsubscribeRequests = onValue(requestRef, (snapshot) => {
 			if(snapshot.exists()){
@@ -40,16 +49,16 @@ export default function SuggestedFriends(){
 		return () => {
 			unsubscribe();
 			unsubscribeRequests();
+			unsubscribeFriends();
 		};
 
 	}, [user?.uid, db]);
 
-	const suggestedFriends = users.filter(u => {
-		const isNotMe = u.uid !== user?.uid;
-  	const hasNoRequest = !sentRequests[u.uid]; // Mas malinis: Ichecheck kung WALA talagang status (sent man o received)
-    return isNotMe && hasNoRequest;
-	});
-
+	const suggestedFriends = users.filter(u => 
+		u.uid !== user?.uid && 
+		sentRequests[u.uid]?.status !== "received" &&
+		userFriends[u.uid]?.status !== "friends"
+	);
 	/*
 	 * * Handles Sending / Canceling Friend Requests sa Firebase
 	 */
@@ -108,7 +117,7 @@ export default function SuggestedFriends(){
 								disabled={isLoading}
 								type="button"
 								className={`flex justify-center items-center px-3.5 py-2 gap-x-2 rounded-lg cursor-pointer ${
-                  isRequested ? 'bg-zinc-700 text-white': 'bg-zinc-100 dark:bg-zinc-100'}`}>
+                  isRequested ? 'bg-zinc-700 text-white': 'bg-zinc-100 dark:bg-zinc-100 hover:bg-zinc-300'}`}>
 									{/* <div className='flex justify-center items-center'><img className='w-5 h-5' src={addFriend} alt="Add Friend"/></div> */}
 									<p className={`text-[14px] font-roboto font-semibold ${isRequested ? 'text-white' : 'text-zinc-900' }`}>
                     {isRequested ? 'Cancel Request' : 'Add friend'}

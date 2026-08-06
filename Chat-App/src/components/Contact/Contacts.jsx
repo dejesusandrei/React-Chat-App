@@ -7,16 +7,53 @@ import SuggestedFriends from '../Contact/SuggestedFriends'
 import noChats from '../../assets/conversation.png'
 import addFriend from '../../assets/add-friend-gray.png'
 import search from '../../assets/search.png'
+import dots from '../../assets/dots.png'
 
-function Request({users, setUsers, friendRequests, setFriendRequests}){
+function Request({user, db, users, setUsers, friendRequests, setFriendRequests}){
+	const [loadingUid, setLoadingUid] = useState(null);
+
+	async function handleAcceptRequest(senderUid){
+		if (!user?.uid || !senderUid) return;
+		try {
+			const updates = {};
+			const timestamp = Date.now();
+
+			updates[`friends/${user.uid}/${senderUid}`] = { status: "friends", addedAt: timestamp}
+			updates[`friends/${senderUid}/${user.uid}`] = { status: "friends", addedAt: timestamp}
+
+			// Remove the request
+			updates[`friendRequests/${user.uid}/${senderUid}`] = null;
+      updates[`friendRequests/${senderUid}/${user.uid}`] = null;
+
+			await update(ref(db), updates);
+		} catch (error) {
+			console.error("Error accepting friend request:", error);
+		}finally{
+			setLoadingUid(null);
+		}
+	}
+
+	async function handleDeclineRequest(senderUid){
+		if (!user?.uid || !senderUid) return;
+		try {
+			const updates = {};
+			// Remove the request
+			updates[`friendRequests/${user.uid}/${senderUid}`] = null;
+      updates[`friendRequests/${senderUid}/${user.uid}`] = null;
+
+			await update(ref(db), updates);
+		} catch (error) {
+			console.error("Error accepting friend request:", error);
+		}finally{
+			setLoadingUid(null);
+		}
+	}
+
 	return(
 		<>
 			{friendRequests.length === 0 ? (
-				<div className="flex flex-col items-center gap-1">
-					<h2 className="text-[24px] font-roboto font-semibold mt-1 text-black dark:text-white">
-						Friend Requests
-					</h2>
-					<p className="text-sm font-roboto text-black dark:text-zinc-400 max-w-75 text-center">
+				<div className="flex flex-col items-center mt-13">
+					<p className="font-roboto text-black dark:text-zinc-400 max-w-75 text-center">
 						You have no pending requests.
 					</p>
 				</div>
@@ -30,21 +67,26 @@ function Request({users, setUsers, friendRequests, setFriendRequests}){
 					{friendRequests.map(({senderUid}) =>{
 						const sender = users[senderUid];
 						return(
-								<div key={senderUid} className= 'flex gap-2.5 items-center grow h-12.5'>
-									<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full" style={{ backgroundColor: sender?.avatarColor}}>
-										{sender?.firstName[0].toUpperCase()}
-									</div>
-									<div className="flex flex-col justify-center font-roboto grow">
-										<p className="font-bold text-[14px] text-white">{`${sender?.firstName} ${sender?.lastName}`}</p>
-										<p className="text-[13px] text-gray-200 mb-1">{sender?.email}</p>
-									</div>
-									<button className="flex justify-center items-center px-3.5 py-2 gap-x-2 bg-zinc-100 rounded-lg  cursor-pointer">
-										<p className="text-[14px] font-roboto font-semibold text-white dark:text-zinc-900">Accept</p>
-									</button>
-									<button className="flex justify-center items-center px-3.5 py-2 gap-x-2 bg-zinc-800 rounded-lg border border-zinc-300  cursor-pointer">
-										<p className="text-[14px] font-roboto font-semibold text-black dark:text-zinc-200">Decline</p>
-									</button>
+							<div key={senderUid} className= 'flex gap-2.5 items-center grow h-12.5'>
+								<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full" style={{ backgroundColor: sender?.avatarColor}}>
+									{sender?.firstName[0].toUpperCase()}
 								</div>
+								<div className="flex flex-col justify-center font-roboto grow ">
+									<p className="font-bold text-[14px] text-white">{`${sender?.firstName} ${sender?.lastName}`}</p>
+									<p className="text-[13px] text-gray-200 mb-1">{sender?.email}</p>
+								</div>
+
+								<button onClick={() => handleAcceptRequest(senderUid)}
+								disabled={loadingUid}
+								className="flex justify-center items-center px-3.5 py-2 gap-x-2 bg-zinc-100 rounded-lg cursor-pointer hover:bg-zinc-300">
+									<p className="text-[14px] font-roboto font-semibold text-white dark:text-zinc-900">Accept</p>
+								</button>
+								<button onClick={() => handleDeclineRequest(senderUid)}
+								disabled={loadingUid}
+								className="flex justify-center items-center px-3.5 py-2 gap-x-2 bg-zinc-800 rounded-lg border border-zinc-300 cursor-pointer hover:bg-zinc-700">
+									<p className="text-[14px] font-roboto font-semibold text-black dark:text-zinc-200">Decline</p>
+								</button>
+							</div>
 						);
 					})}
 				</div>
@@ -54,20 +96,43 @@ function Request({users, setUsers, friendRequests, setFriendRequests}){
 	);
 }
 
-export function All(){
+export function All({userFriends, users}){
 	return(
 		<>
-			<div className='flex flex-col items-center gap-1 mt-13'>
-				{/* <div className='flex justify-center items-center'><img src={noChats} alt="No Conversation" /></div> */}
-				<h2 className="text-[24px] font-roboto font-semibold mt-1 text-black dark:text-white">No friends yet</h2>
-				<p className="text-sm font-roboto text-black dark:text-zinc-400 max-w-75 text-center">Add friends and start connecting with people.</p>
-			</div>
+			{userFriends.length === 0 ? (
+				<div className='flex flex-col items-center gap-1 mt-13'>
+					<h2 className="text-[24px] font-roboto font-semibold mt-1 text-black dark:text-white">No friends yet</h2>
+					<p className="text-sm font-roboto text-black dark:text-zinc-400 max-w-75 text-center">Add friends and start connecting with people.</p>
+				</div>
+			) : (
+				<div className="flex flex-col justify-center w-full gap-y-1 overflow-scroll scrollbar-none">
+					{userFriends.map((friendUid) =>{
+						const friendData = users[friendUid];
+						return(
+							<div key={friendUid} className= 'flex gap-2.5 items-center grow h-12.5 mt-4'>
+								<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full" style={{backgroundColor: friendData?.avatarColor}}>
+									{friendData?.firstName[0].toUpperCase()}
+								</div>
+								<div className="flex flex-col  justify-center font-roboto grow">
+									<p className="font-bold text-[14px] text-white">{`${friendData?.firstName} ${friendData?.lastName}`}</p>
+									<p className="text-[13px] mb-1 text-green-500">Online</p>
+								</div>
+								<button
+								className='flex justify-center items-center px-3.5 py-2 gap-x-2 rounded-lg cursor-pointer'>
+									<img className='w-5 h-5' src={dots} alt="Dots" />
+								</button>
+							</div>
+						);
+					})}
+				</div>
+			)}
 		</>
 	);
 }
 
 export default function Contacts(){
 	const { user } = useContext(AuthContext);
+	const [userFriends, setUserFriends] = useState([]);
 	const [filter, setFilter] = useState('all');
 	const [friendRequests, setFriendRequests] = useState([]);
 	const [users, setUsers] = useState([]);
@@ -76,11 +141,13 @@ export default function Contacts(){
 	useEffect(() =>{
 		if (!user?.uid) return;
 
+		// Get Users
 		const userRef = ref(db, ('users'));
 		const unsubscribe = onValue(userRef, (snapshot) => {
 			if(snapshot.exists()){ setUsers(snapshot.val()); }
 		})
 
+		// get requests
 		const requestRef = ref(db, (`friendRequests/${user.uid}`));
 		const unsubscribeRequests = onValue(requestRef, (snapshot) =>{
 			if(snapshot.exists()){
@@ -97,23 +164,36 @@ export default function Contacts(){
 			}else{ setFriendRequests([]); }
 		});
 
+		// Get Friends
+		const friendsRef = ref(db, `friends/${user.uid}`);
+		const unsubscribeFriends = onValue(friendsRef, (snapshot) =>{
+			if (snapshot.exists()) {
+        const data = snapshot.val();
+        const friendUids = Object.keys(data);
+        setUserFriends(friendUids);
+      } else {
+        setUserFriends([]);
+      }
+		});
+
 		return () =>{
 			unsubscribe();
 			unsubscribeRequests();
+			unsubscribeFriends();
 		}
 	}, [user?.uid, db]);
 
 	const renderContent = () => {
     switch (filter) {
-      case 'request':
-        return <Request users={users} setUsers={setUsers} friendRequests={friendRequests} setFriendRequests={setFriendRequests}/>;
+      case 'requests':
+        return <Request user={user} db={db} users={users} setUsers={setUsers} friendRequests={friendRequests} setFriendRequests={setFriendRequests}/>;
       case 'online':
         return <p className="text-zinc-400 mt-13">No online friends.</p>;
       case 'offline':
         return <p className="text-zinc-400 mt-13">No offline friends.</p>;
       case 'all':
       default:
-        return <All />;
+        return <All userFriends={userFriends} users={users}/>;
     }
   };
 
@@ -137,39 +217,15 @@ export default function Contacts(){
 					</div>
 				</header>
 
-				{/* FILTERS */}
-				{/* <div className='w-full flex gap-y-2 items-center mt-5 font-poppins'>
-					<button 
-					onClick={() => setFilter('all')}
-					className={ `text-black text-[17px] font-semibold px-5 py-2.5 cursor-pointer ${filter === 'all' ? `border-b border-white dark:text-white` : 'dark:text-zinc-400 hover:text-white'}`}>
-						All
-					</button>
-					<button 
-					onClick={() => setFilter('online')}
-					className={ `text-black text-[17px] font-semibold px-5 py-2.5 cursor-pointer ${filter === 'online' ? `border-b border-white dark:text-white` : 'dark:text-zinc-400 hover:text-white'}`}>
-						Online
-					</button>
-					<button 
-					onClick={() => setFilter('offline')}
-					className={ `text-black text-[17px] font-semibold px-5 py-2.5 cursor-pointer ${filter === 'offline' ? `border-b border-white dark:text-white` : 'dark:text-zinc-400 hover:text-white'}`}>
-						Offline
-					</button>
-					<button 
-					onClick={() => setFilter('request')}
-					className={ `text-black text-[17px] font-semibold px-5 py-2.5 cursor-pointer ${filter === 'request' ? `border-b border-white dark:text-white` : 'dark:text-zinc-400 hover:text-white'}`}>
-						Request
-					</button>
-				</div> */}
-
 				<div className="w-full flex gap-y-2 items-center mt-5 font-poppins">
-        {['all', 'online', 'offline', 'request'].map((tab) => (
+        {['all', 'online', 'offline', 'requests'].map((tab) => (
           <button
             key={tab}
             onClick={() => setFilter(tab)}
 						className={`relative flex items-center gap-x-2 capitalize text-[17px] font-semibold px-5 py-2.5 cursor-pointer ${
             filter === tab? 'border-b border-white text-black dark:text-white': 'text-black dark:text-zinc-400 hover:text-white'}`}>
             <span>{tab}</span>
-						{tab === 'request' && (<span className="flex items-center justify-center min-w-5 h-5 pr-0.5 text-[12px] font-bold text-white bg-red-500 rounded-full">{friendRequests.length}</span>)}
+						{tab === 'requests' && friendRequests.length > 0 && (<span className="flex items-center justify-center min-w-5 h-5 pr-0.5 text-[12px] font-bold text-white bg-red-500 rounded-full">{friendRequests.length}</span>)}
           </button>
 				))}
 				</div>
