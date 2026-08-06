@@ -96,26 +96,47 @@ function Request({user, db, users, setUsers, friendRequests, setFriendRequests})
 	);
 }
 
-export function All({userFriends, users}){
+export function FriendList({userFriends, users, filterType = 'all'}){
+	const filteredFriends = userFriends.filter((friendUid) => {
+    const friendData = users[friendUid];
+    if (!friendData) return false;
+    const isUserOnline = Boolean(friendData.isOnline);
+    if (filterType === 'online') {
+      return isUserOnline === true; 
+    }
+    if (filterType === 'offline') {
+      return isUserOnline === false;
+    }
+    return true; // 'all' tab
+  });
+
+  const emptySubtitles = {
+    all: "Add friends and start connecting with people.",
+    online: "None of your friends are currently online.",
+    offline: "All your friends are online right now!",
+  };
 	return(
 		<>
-			{userFriends.length === 0 ? (
+			{filteredFriends.length === 0 ? (
 				<div className='flex flex-col items-center gap-1 mt-13'>
-					<h2 className="text-[24px] font-roboto font-semibold mt-1 text-black dark:text-white">No friends yet</h2>
-					<p className="text-sm font-roboto text-black dark:text-zinc-400 max-w-75 text-center">Add friends and start connecting with people.</p>
+					<p className=" font-roboto text-black dark:text-zinc-400 max-w-75 text-center">{emptySubtitles[filterType]}</p>
 				</div>
 			) : (
 				<div className="flex flex-col justify-center w-full gap-y-1 overflow-scroll scrollbar-none">
-					{userFriends.map((friendUid) =>{
+					{filteredFriends.map((friendUid) =>{
 						const friendData = users[friendUid];
+						const isOnline = Boolean(friendData?.isOnline);
 						return(
 							<div key={friendUid} className= 'flex gap-2.5 items-center grow h-12.5 mt-4'>
-								<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full" style={{backgroundColor: friendData?.avatarColor}}>
-									{friendData?.firstName[0].toUpperCase()}
-								</div>
+								<div className="relative shrink-0">
+                  <div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full"style={{ backgroundColor: friendData?.avatarColor || "#4B5563" }}>
+										{friendData?.firstName?.[0]?.toUpperCase() || "?"}
+                  </div>
+                  <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-zinc-900 ${isOnline ? "bg-green-500" : "bg-gray-500"}`}/>
+                </div>
 								<div className="flex flex-col  justify-center font-roboto grow">
 									<p className="font-bold text-[14px] text-white">{`${friendData?.firstName} ${friendData?.lastName}`}</p>
-									<p className="text-[13px] mb-1 text-green-500">Online</p>
+									<p className={`text-[13px] mb-1 font-semibold ${isOnline ? "text-green-500" : "text-gray-400"}`}>{isOnline ? "Online" : "Offline"}</p>
 								</div>
 								<button
 								className='flex justify-center items-center px-3.5 py-2 gap-x-2 rounded-lg cursor-pointer'>
@@ -186,14 +207,16 @@ export default function Contacts(){
 	const renderContent = () => {
     switch (filter) {
       case 'requests':
-        return <Request user={user} db={db} users={users} setUsers={setUsers} friendRequests={friendRequests} setFriendRequests={setFriendRequests}/>;
+        return (
+          <Request user={user} db={db} users={users} setUsers={setUsers} friendRequests={friendRequests} setFriendRequests={setFriendRequests}/>
+        );
       case 'online':
-        return <p className="text-zinc-400 mt-13">No online friends.</p>;
+        return <FriendList userFriends={userFriends} users={users} filterType="online" />;
       case 'offline':
-        return <p className="text-zinc-400 mt-13">No offline friends.</p>;
+        return <FriendList userFriends={userFriends} users={users} filterType="offline" />;
       case 'all':
       default:
-        return <All userFriends={userFriends} users={users}/>;
+        return <FriendList userFriends={userFriends} users={users} filterType="all" />;
     }
   };
 
