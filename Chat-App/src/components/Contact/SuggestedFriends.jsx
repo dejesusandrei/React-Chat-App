@@ -44,7 +44,11 @@ export default function SuggestedFriends(){
 
 	}, [user?.uid, db]);
 
-	const suggestedFriends = users.filter(u => u.uid !== user.uid);
+	const suggestedFriends = users.filter(u => {
+		const isNotMe = u.uid !== user?.uid;
+  	const hasNoRequest = !sentRequests[u.uid]; // Mas malinis: Ichecheck kung WALA talagang status (sent man o received)
+    return isNotMe && hasNoRequest;
+	});
 
 	/*
 	 * * Handles Sending / Canceling Friend Requests sa Firebase

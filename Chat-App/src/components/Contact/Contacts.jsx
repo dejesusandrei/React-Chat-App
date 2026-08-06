@@ -24,7 +24,7 @@ function Request({users, setUsers, friendRequests, setFriendRequests}){
 				(
 				<div className="flex flex-col justify-center w-full gap-y-3 mt-2 overflow-scroll scrollbar-none">
 					<div className="text-black dark:text-white font-semibold text-[16.5px]">
-						<p>Frind Requests ({friendRequests.length})</p>
+						<p>Friend Requests ({friendRequests.length})</p>
 					</div>
 
 					{friendRequests.map(({senderUid}) =>{
