@@ -106,12 +106,12 @@ export default function SuggestedFriends(){
 
 						return(
 							<div key={friend?.uid} className= 'flex gap-2.5 items-center grow h-12.5'>
-								<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full" style={{backgroundColor: friend?.avatarColor}}>
-									{friend?.firstName[0].toUpperCase()}
+								<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full" style={{backgroundColor: friend?.avatarColor || "#4B5563"}}>
+									{friend?.firstName?.[0]?.toUpperCase() || "?"}
 								</div>
 								<div className="flex flex-col justify-center font-roboto grow">
-									<p className="font-bold text-[14px] text-white">{`${friend?.firstName} ${friend?.lastName}`}</p>
-									<p className="text-[13px] text-gray-200 mb-1">{friend?.email}</p>
+									<p className="font-bold text-[14px] text-white">{`${friend?.firstName || "User"} ${friend?.lastName || ""}`}</p>
+									<p className="text-[13px] text-gray-200 mb-1">{friend?.email || ""}</p>
 								</div>
 								<button onClick={() => handleToggleFriendRequest(friend?.uid)} 
 								disabled={isLoading}
