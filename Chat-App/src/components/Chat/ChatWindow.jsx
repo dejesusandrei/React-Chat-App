@@ -1,0 +1,79 @@
+
+import '../../index.css'
+import Click from '../../assets/click.png'
+import Info from '../../assets/info.png'
+import Phone from '../../assets/phone-call.png'
+
+export default function ChatWindow(){
+	return(
+		<>
+		{/* <div className='w-full h-full flex justify-center items-center'>
+			<div className='flex flex-col items-center gap-1'>
+				<h2 className="text-[23px] font-roboto font-semibold text-black dark:text-white">No conversation selected</h2>
+				<p className="text-sm font-roboto text-black dark:text-zinc-400 max-w-50 text-center">Select a chat from the list to start messaging.</p>
+			</div>
+		</div> */}
+
+			<div className='flex justify-between items-center p-4 font-roboto border-b border-zinc-900'>
+				<div className= 'flex gap-2.5 items-center grow h-12.5'>
+					<div className="image flex justify-center items-center text-white font-semibold w-11 h-11 rounded-full bg-violet-400" >
+						M
+					</div>
+					<div className="flex items-center font-roboto">
+						<p className="font-bold text-[17.5px] text-white">Marjea Sacdalan</p>
+					</div>
+				</div>
+
+				<div className='flex justify-center items-center gap-x-2 pr-3'>
+					<button onClick={() => alert('Not available yet')} className='flex justify-center items-center cursor-pointer w-10 h-10 rounded-full hover:bg-zinc-600 '>
+						<img className='w-5.5 h-5.5' src={Phone} alt="Call" />
+					</button>
+					<button className='flex justify-center items-center cursor-pointer  w-10 h-10 rounded-full hover:bg-zinc-600'>
+						<img className='w-6 h-6' src={Info} alt="Call" />
+					</button>
+				</div>
+			</div>
+
+			{/* 2. Chat Messages Container (Scrollable Area) */}
+			<div className="grow overflow-y-auto p-4 bg-zinc-800 space-y-3">
+				{/* Dito ilalagay ang chat messages */}
+				<div className="bg-zinc-700 p-3 rounded-2xl max-w-[80%] w-fit text-black dark:text-white">
+					asdas
+				</div>
+			</div>
+
+			{/* 3. Bottom Chat Input Area */}
+			<div className="p-3 border-t border-zinc-900 bg-zinc-800">
+				<div className="flex items-end gap-2 bg-zinc-700/60 rounded-2xl p-2 border border-zinc-700 focus-within:border-violet-400 transition">
+					{/* Auto-resizing Textarea */}
+					<textarea
+						placeholder="Type a message..."
+						rows={1}
+						className="grow bg-transparent text-white text-base scrollbar-none placeholder-zinc-400 resize-none outline-none px-2 py-1.5 max-h-32 overflow-y-auto"
+						onInput={(e) => {
+							// Kusa itong lalaki depende sa haba ng text hanggang sa max-h-32 (128px)
+							e.target.style.height = "auto";
+							e.target.style.height = `${e.target.scrollHeight}px`;
+						}}
+						onKeyDown={(e) => {
+							// Magse-send kapag pinindot ang Enter (nang walang Shift)
+							if (e.key === 'Enter' && !e.shiftKey) {
+								e.preventDefault();
+								// Ilagay dito ang function para mag-send ng message
+							}
+						}}
+					/>
+					{/* Send Button */}
+					<button 
+						className="flex justify-center items-center w-9 h-9 bg-violet-500 hover:bg-violet-600 text-white rounded-full transition shrink-0 cursor-pointer"
+						onClick={() => {/* Add send logic here */}}>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 pl-0.5">
+							<path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
+						</svg>
+					</button>
+				</div>
+			</div>
+
+		</>
+	);
+}

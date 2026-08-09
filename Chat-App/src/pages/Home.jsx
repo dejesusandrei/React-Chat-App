@@ -9,6 +9,7 @@ import Sidebar from "../components/Sidebar";
 import useWindowSize from '../hooks/useWindowSize'
 import Contacts from "../components/Contact/Contacts";
 import Notifications from "../components/Notification/Notifications";
+import ChatWindow from "../components/Chat/ChatWindow";
 
 function Home(){
 	const { user } = useContext(AuthContext);
@@ -45,7 +46,7 @@ function Home(){
 
 	// To handle resizing the page and for responsiveness
 	const { width } = useWindowSize();
-	const isMobile = width < 450;
+	const isMobile = width < 620;
 	const closeSidebar = width < 1357;
 	
 	useEffect(() =>{
@@ -64,8 +65,8 @@ function Home(){
 					<Outlet/>
 				</aside>
 
-				<section className="w-full rounded-lg bg-zinc-800 ml-4 mr-4 text-white flex justify-center items-center">
-					CHAT WINDOW
+				<section className="w-full h-full flex flex-col rounded-lg bg-zinc-800 ml-4 mr-4">
+					<ChatWindow/>
 				</section>
 			</main>
 			
