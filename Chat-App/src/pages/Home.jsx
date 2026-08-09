@@ -1,5 +1,8 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, useContext } from "react";
 import { Outlet } from "react-router-dom";
+import { getDatabase, ref, onValue, onDisconnect, set } from 'firebase/database';
+import app from "../firebase/firebase.config";
+import { AuthContext } from "../context/AuthProvider";
 
 import Chats from "../components/Chat/Chats";
 import Sidebar from "../components/Sidebar";
@@ -8,11 +11,34 @@ import Contacts from "../components/Contact/Contacts";
 import Notifications from "../components/Notification/Notifications";
 
 function Home(){
+	const { user } = useContext(AuthContext);
+	const db = getDatabase(app);
+	// Para makita kung sino yung online
+	useEffect(() =>{
+		if (!user?.uid) return;
+		const connectedRef = ref(db, ".info/connected");
+		const userStatusRef = ref(db, `users/${user.uid}/isOnline`);
+
+		const unsubscribeConnected = onValue(connectedRef, (snapshot) => {
+			if (snapshot.val() === true) {
+				// Awtomatikong magiging false kapag nag-close ng browser/app o nawalan ng internet
+				onDisconnect(userStatusRef).set(false);
+				// Gawing true (Online) habang nakakonekta
+				set(userStatusRef, true);
+			}
+		});
+		return () => {
+			set(userStatusRef, false);
+			unsubscribeConnected();
+		};
+	}, [user?.uid, db]);
+
+
 	const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
 		const savedState = localStorage.getItem("sidebarOpen");
 		return savedState !== null ? JSON.parse(savedState) : true;
 	});
-
+	
 	useEffect(() => {
 		localStorage.setItem("sidebarOpen", JSON.stringify(isSidebarOpen));
 	}, [isSidebarOpen]);
