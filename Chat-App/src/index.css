@@ -8,3 +8,10 @@
   --font-poppins: "Poppins", sans-serif;
   --font-roboto: "Roboto", Arial;
 }
+
+.truncate {
+  width: 270px;             /* Or max-width / percentage */
+  white-space: nowrap;      /* Keeps all text on a single line */
+  overflow: hidden;         /* Hides any content that goes beyond the container */
+  text-overflow: ellipsis;  /* Adds the '...' at the end */
+}

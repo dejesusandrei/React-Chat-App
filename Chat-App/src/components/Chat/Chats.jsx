@@ -1,8 +1,5 @@
-import { NavLink } from 'react-router-dom';
-
-import addFriend from '../../assets/add-friend.png'
 import search from '../../assets/search.png'
-import noChats from '../../assets/conversation.png'
+import ChatList from './ChatList'
 
 export default function Chats(){
 	return(
@@ -20,17 +17,8 @@ export default function Chats(){
 						</div>
 				</header>
 
-				<section className='flex mt-4 grow w-full justify-center items-center'>
-					<div className='flex flex-col items-center gap-1'>
-						<div className='flex justify-center items-center'><img src={noChats} alt="No Conversation" /></div>
-						<h2 className="text-[24px] font-roboto font-semibold mt-1 text-black dark:text-white">No conversation yet</h2>
-						<p className="text-sm font-roboto text-black dark:text-zinc-400 max-w-75 text-center">Start a conversation by adding a friend to send messages, share media, and keep in touch.</p>
-
-						<NavLink to="../contacts" className=" flex justify-center items-center gap-x-2 mt-6 bg-white rounded-xl px-6 py-2.75 cursor-pointer">
-							<div className='flex justify-center items-center'><img className='w-7 h-7' src={addFriend} alt="Add Friend"/></div>
-							<p className="text-[16px] font-roboto font-semibold text-white dark:text-zinc-900">Add Friend</p>
-						</NavLink>
-					</div>
+				<section className='flex mt-4 grow w-full flex-col '>
+					<ChatList/>
 				</section>
 			</div>
 		</>

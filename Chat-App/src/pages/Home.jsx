@@ -1,5 +1,6 @@
 import { useState, useEffect, Fragment, useContext } from "react";
 import { Outlet } from "react-router-dom";
+import { useSearchParams } from 'react-router-dom';
 import { getDatabase, ref, onValue, onDisconnect, set } from 'firebase/database';
 import app from "../firebase/firebase.config";
 import { AuthContext } from "../context/AuthProvider";
@@ -14,6 +15,7 @@ import ChatWindow from "../components/Chat/ChatWindow";
 function Home(){
 	const { user } = useContext(AuthContext);
 	const db = getDatabase(app);
+	const [users, setUsers] = useState([]);
 	// Para makita kung sino yung online
 	useEffect(() =>{
 		if (!user?.uid) return;
@@ -28,10 +30,26 @@ function Home(){
 				set(userStatusRef, true);
 			}
 		});
+
+		// Get all users
+		const userRef = ref(db, "users");
+		const unsubscribes = onValue(userRef, (snapshot) =>{
+			if(snapshot.exists()){
+				const data = snapshot.val();
+				const usersArray = Object.entries(data).map(([uid, value]) => ({
+					uid,
+					...value
+				}));
+				setUsers(usersArray);
+			}
+		});
+
 		return () => {
 			set(userStatusRef, false);
 			unsubscribeConnected();
+			unsubscribes();
 		};
+
 	}, [user?.uid, db]);
 
 
@@ -46,12 +64,28 @@ function Home(){
 
 	// To handle resizing the page and for responsiveness
 	const { width } = useWindowSize();
-	const isMobile = width < 620;
+	const isMobile = width < 640;
 	const closeSidebar = width < 1357;
 	
 	useEffect(() =>{
 		if(closeSidebar) setIsSidebarOpen(false);
 	}, [closeSidebar]);
+
+	// Dito natin itatago kung sino ang kasalukuyang pino-click na kausap
+  const [activeChat, setActiveChat] = useState(null);
+
+	const [searchParams] = useSearchParams();
+	const chatIdFromUrl = searchParams.get('id');
+
+	useEffect(() => {
+		// Kung may ID sa URL at may listahan ka ng users, hanapin at i-set as activeChat
+		if (chatIdFromUrl) {
+			const selectedUser = users.find(u => u.uid === chatIdFromUrl);
+			if (selectedUser) {
+				setActiveChat(selectedUser);
+			}
+		}
+	}, [chatIdFromUrl, users])
 
 	return(
 		<>
@@ -59,14 +93,14 @@ function Home(){
 
 			<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} isMobile={isMobile}/>
 			
-			<main className={`h-dvh bg-zinc-950 py-3.5 flex ${isMobile ? 'ml-0' : isSidebarOpen ? "ml-66" : "ml-20"}`}>
+			<main className={`h-dvh bg-zinc-950 py-1.5 px-1.5 sm:py-3.5 flex ${isMobile ? 'ml-0' : isSidebarOpen ? "ml-66" : "ml-20"}`}>
 				<aside className="hidden lg:block w-166 ml-3 p-4 rounded-lg bg-zinc-800">
 					{/* Outlet renders <Chats /> || <Contacts/> */}
-					<Outlet/>
+					<Outlet context={{ activeChat, setActiveChat }}/>
 				</aside>
 
-				<section className="w-full h-full flex flex-col rounded-lg bg-zinc-800 ml-4 mr-4">
-					<ChatWindow/>
+				<section className="w-full h-full flex flex-col bg-zinc-800 rounded-lg mx-1 sm:mx-4 overflow-hidden">
+					<ChatWindow activeChat={activeChat}/>
 				</section>
 			</main>
 			

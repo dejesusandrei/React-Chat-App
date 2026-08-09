@@ -59,6 +59,7 @@ export default function SuggestedFriends(){
 		sentRequests[u.uid]?.status !== "received" &&
 		userFriends[u.uid]?.status !== "friends"
 	);
+	
 	/*
 	 * * Handles Sending / Canceling Friend Requests sa Firebase
 	 */
