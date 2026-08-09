@@ -1,11 +1,69 @@
+import { useState, useEffect, Fragment, useContext, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
+import { getDatabase, ref, onValue, push, serverTimestamp } from 'firebase/database';
+import app from "../../firebase/firebase.config";
+import { AuthContext } from "../../context/AuthProvider";
+import ChatMessage from './ChatMessage'
 
 import '../../index.css'
 import Click from '../../assets/click.png'
 import Info from '../../assets/info.png'
 import Phone from '../../assets/phone-call.png'
 
-export default function ChatWindow({activeChat}){
+export default function ChatWindow({activeChat, onBack}){
 	const isOnline = Boolean(activeChat?.isOnline);
+	const [messageText, setMessageText] = useState("");
+  const [messages, setMessages] = useState([]);
+	const db = getDatabase(app);
+	const { user } = useContext(AuthContext);
+
+	const navigate = useNavigate();
+
+	// reset the text height
+	const textareaRef = useRef(null);
+	
+	// Load the messages
+	useEffect(() =>{
+		if(!user?.uid || !activeChat?.uid) return;
+		
+		// make a chatRoom ID
+		const chatRoomId = [user.uid, activeChat.uid].sort().join("_");
+		const messageRef = ref(db, `messages/${chatRoomId}`);
+		const unsunscribe = onValue(messageRef, (snapshot) => {
+			if(snapshot.exists()){
+				const data = snapshot.val();
+				const loadedMessages = Object.entries(data).map(([id, value]) => ({
+					id,
+					...value,
+				}));
+				setMessages(loadedMessages);
+			}else{ setMessages([]); }
+		});
+		return () => unsunscribe();
+	}, [user?.uid, activeChat?.uid, db]);
+	
+	// Send a Message
+	const sendMessage = async () =>{
+		if(!user?.uid || !activeChat?.uid || !messageText.trim()) return;
+		
+		try {
+			// make a chat room id
+			const chatRoomId = [user.uid, activeChat.uid].sort().join("_");
+			await push(ref(db, `messages/${chatRoomId}`), {
+				senderId: user.uid,
+				receiverId: activeChat.uid,
+				text: messageText,
+				timestamp: serverTimestamp(),
+			})
+			setMessageText("");
+			if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+      }
+		} catch (error) {
+			console.error("Failed to send a message: ", error);
+		}
+	};
+
 	return(
 		<>
 			{!activeChat ? (
@@ -20,7 +78,7 @@ export default function ChatWindow({activeChat}){
 					<div className="flex justify-between items-center py-3 px-2 sm:p-4 font-roboto border-b border-zinc-900 w-full ">
 						<div className="flex gap-2 sm:gap-3 items-center grow min-w-0 pr-2">
 							<button 
-								onClick={() => /* Add your navigation back logic here (e.g. navigate(-1)) */ {}} 
+								onClick={() =>  onBack()} 
 								className="sm:hidden p-1.5 text-zinc-400 hover:text-white rounded-full active:bg-zinc-800 shrink-0">
 								<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
 							</button>
@@ -58,18 +116,16 @@ export default function ChatWindow({activeChat}){
 					</div>
 
 					{/* 2. Chat Messages Container (Scrollable Area) */}
-					<div className="grow overflow-y-auto p-4 bg-zinc-800 space-y-3 flex flex-col justify-end">
-						{/* Dito ilalagay ang chat messages */}
-						<div className="bg-zinc-700 p-3 rounded-2xl max-w-[80%] w-fit text-black dark:text-white">
-							asdas
-						</div>
+					<div className="grow overflow-y-auto scrollbar-none p-4 bg-zinc-800 space-y-3 flex flex-col justify-end">
+						<ChatMessage messages={messages} activeChat={activeChat} />
 					</div>
 
 					{/* 3. Bottom Chat Input Area */}
 					<div className="p-3 border-t border-zinc-900 bg-zinc-800">
 						<div className="flex items-end gap-2 bg-zinc-700/60 rounded-2xl p-2 border border-zinc-700 focus-within:border-violet-400 transition">
-							{/* Auto-resizing Textarea */}
 							<textarea
+								ref={textareaRef}
+								value={messageText}
 								placeholder="Type a message..."
 								rows={1}
 								className="grow bg-transparent text-white text-base scrollbar-none placeholder-zinc-400 resize-none outline-none px-2 py-1.5 max-h-32 overflow-y-auto"
@@ -82,14 +138,15 @@ export default function ChatWindow({activeChat}){
 									// Magse-send kapag pinindot ang Enter (nang walang Shift)
 									if (e.key === 'Enter' && !e.shiftKey) {
 										e.preventDefault();
-										// Ilagay dito ang function para mag-send ng message
+										sendMessage();
 									}
 								}}
+								onChange={(e) => setMessageText(e.target.value)}
 							/>
 							{/* Send Button */}
 							<button 
 								className="flex justify-center items-center w-9 h-9 bg-violet-500 hover:bg-violet-600 text-white rounded-full transition shrink-0 cursor-pointer"
-								onClick={() => {/* Add send logic here */}}>
+								onClick={() => { sendMessage(); }}>
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 pl-0.5">
 									<path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
 								</svg>

@@ -95,7 +95,7 @@ export default function ChatList(){
 							</div>
 							<div className="flex flex-col text-left  font-roboto grow min-w-0 overflow-hidden">
 								<p className="font-semibold text-[15px] text-white">{`${friend?.firstName} ${friend?.lastName}`}</p>
-								<p className={`text-[13px] mb-1 font-semibold truncate ${isOnline ? "text-green-500" : "text-gray-400"}`}>
+								<p className={`text-[13px] mb-1 font-semibold truncate text-zinc-400`}>
 									{`You're now friends with ${friend?.firstName} ${friend?.lastName}`}
 								</p>
 							</div>

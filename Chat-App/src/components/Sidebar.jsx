@@ -20,7 +20,7 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile}) {
 	const { user } = useContext(AuthContext);
 	return(
 		<>
-			<aside className={`h-screen bg-zinc-900 text-white fixed top-0 left-0 px-3 py-4 flex flex-col font-roboto  ${isMobile ? 'hidden w-0' : isSidebarOpen ? "w-66" : "w-20"}`}>
+			<aside className={`h-screen bg-zinc-900 text-white fixed top-0 left-0 px-3 py-4 flex flex-col font-roboto  ${isMobile ? 'hidden w-0' : isSidebarOpen ? "w-76" : "w-20"}`}>
 				<div className="flex flex-col items-center justify-between h-full">
 					
 					<div className="w-full flex flex-col gap-y-1">
@@ -85,8 +85,8 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile}) {
 							</div>
 							{isSidebarOpen && (
 								<div className="flex flex-col justify-center">
-									<p className="font-bold text-[14px]">{user?.displayName}</p>
-									<p className="text-[13px] text-gray-200 mb-1">{user?.email}</p>
+									<p className="font-bold text-[13px] lg:text-[14px]">{user?.displayName}</p>
+									<p className=" text-[12px] lg:text-[13px] text-gray-200 mb-1">{user?.email}</p>
 								</div>
 							)}
 						</div>
