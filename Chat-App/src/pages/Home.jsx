@@ -65,8 +65,8 @@ function Home(){
 
 	// To handle resizing the page and for responsiveness
 	const { width } = useWindowSize();
-	const isMobile = width < 300;
-	const closeSidebar = width < 1357;
+	const isMobile = width < 20;
+	const closeSidebar = width < 1280;
 	
 	useEffect(() =>{
 		if(closeSidebar) setIsSidebarOpen(false);
@@ -95,13 +95,13 @@ function Home(){
 
 			<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} isMobile={isMobile}/>
 			
-			<main className={`h-dvh bg-zinc-950 py-1.5 px-1.5 sm:py-3.5 flex ${isMobile ? 'ml-0' : isSidebarOpen ? "ml-76" : "ml-20"}`}>
-				<aside className={`w-full  md:w-136  ml-0 lg:ml-3 p-4 rounded-lg bg-zinc-800 ${activeChat ? "hidden lg:flex lg:flex-col" : "flex flex-col"}`}>
+			<main className={`h-dvh bg-zinc-950 py-1.5 px-1.5 sm:py-3.5 flex ${isMobile ? 'ml-0' : isSidebarOpen ? "ml-76" : "ml-18"}`}>
+				<aside className={`w-full lg:w-96 xl:w-md shrink-0 h-full p-3 overflow-hidden rounded-lg bg-zinc-800 ${activeChat ? "hidden lg:flex lg:flex-col" : "flex flex-col"}`}>
 					{/* Outlet renders <Chats /> || <Contacts/> */}
 					<Outlet context={{ activeChat, setActiveChat, title, setTitle }}/>
 				</aside>
 
-				<section className={`w-full h-full bg-zinc-800 grow rounded-lg mx-0 sm:mx-4 overflow-hidden ${activeChat ? "flex flex-col" : "hidden md:flex lg:flex-col"}`}>
+				<section className={`h-full bg-zinc-800 grow rounded-lg overflow-hidden md:mx-2 min-w-0 ${activeChat ? "flex flex-col" : "hidden md:flex lg:flex-col"}`}>
 					<ChatWindow activeChat={activeChat} onBack={() => setActiveChat(null)}/>
 				</section>
 			</main>

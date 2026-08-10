@@ -100,7 +100,7 @@ export default function ChatWindow({activeChat, onBack}){
 						<div className="flex gap-2 sm:gap-3 items-center grow min-w-0 pr-2">
 							<button 
 								onClick={() =>  onBack()} 
-								className="sm:hidden p-1.5 text-zinc-400 hover:text-white rounded-full active:bg-zinc-800 shrink-0">
+								className="lg:hidden p-1.5 text-zinc-400 hover:text-white rounded-full active:bg-zinc-800 shrink-0">
 								<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
 							</button>
 
@@ -121,17 +121,17 @@ export default function ChatWindow({activeChat, onBack}){
 						</div>
 
 						{/* Right Section: Action Buttons */}
-						<div className="flex justify-center items-center gap-x-1 sm:gap-x-2 shrink-0">
+						<div className="flex justify-center items-center  sm:gap-x-2 shrink-0">
 							<button 
 								onClick={() => alert('Not available yet')} 
 								className="flex justify-center items-center cursor-pointer w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-zinc-800 active:bg-zinc-700 transition-colors"
 								title="Call">
-								<img className="w-5 h-5 sm:w-5.5 sm:h-5.5" src={Phone} alt="Call" />
+								<img className="w-4 h-4 sm:w-5.5 sm:h-5.5" src={Phone} alt="Call" />
 							</button>
 							<button 
 								className="flex justify-center items-center cursor-pointer w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-zinc-800 active:bg-zinc-700 transition-colors"
-								title="Info">
-								<img className="w-5 h-5 sm:w-6 sm:h-6" src={Info} alt="Info" />
+								title="Conversation Information">
+								<img className="w-4.5 h-4.5 sm:w-6 sm:h-6" src={Info} alt="Info" />
 							</button>
 						</div>
 					</div>

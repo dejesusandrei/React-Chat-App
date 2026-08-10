@@ -3,6 +3,7 @@ import { ref, set, update, onValue, getDatabase } from "firebase/database";
 import app from "../../firebase/firebase.config";
 import { AuthContext } from "../../context/AuthProvider";
 import SuggestedFriends from '../Contact/SuggestedFriends'
+import '../../index.css'
 
 import noChats from '../../assets/conversation.png'
 import addFriend from '../../assets/add-friend-gray.png'
@@ -104,16 +105,12 @@ export function FriendList({userFriends, users, filterType = 'all'}){
     if (filterType === 'online') {
       return isUserOnline === true; 
     }
-    if (filterType === 'offline') {
-      return isUserOnline === false;
-    }
     return true; // 'all' tab
   });
 
   const emptySubtitles = {
     all: "Add friends and start connecting with people.",
     online: "None of your friends are currently online.",
-    offline: "All your friends are online right now!",
   };
 	return(
 		<>
@@ -134,13 +131,13 @@ export function FriendList({userFriends, users, filterType = 'all'}){
                   </div>
                   <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-zinc-900 ${isOnline ? "bg-green-500" : "bg-gray-500"}`}/>
                 </div>
-								<div className="flex flex-col  justify-center font-roboto grow">
-									<p className="font-bold text-[14px] text-white">{`${friendData?.firstName} ${friendData?.lastName}`}</p>
+								<div className="flex flex-col text-left font-roboto flex-1 min-w-0 overflow-hidden">
+									<p className="font-bold text-[14px] text-white truncate">{`${friendData?.firstName} ${friendData?.lastName}`}</p>
 									<p className={`text-[13px] mb-1 font-semibold ${isOnline ? "text-green-500" : "text-gray-400"}`}>{isOnline ? "Online" : "Offline"}</p>
 								</div>
 								<button
 								className='flex justify-center items-center px-3.5 py-2 gap-x-2 rounded-lg cursor-pointer'>
-									<img className='w-5 h-5' src={dots} alt="Dots" />
+									<img className='w-5 h-5 shrink-0' src={dots} alt="Dots" />
 								</button>
 							</div>
 						);
@@ -212,8 +209,6 @@ export default function Contacts(){
         );
       case 'online':
         return <FriendList userFriends={userFriends} users={users} filterType="online" />;
-      case 'offline':
-        return <FriendList userFriends={userFriends} users={users} filterType="offline" />;
       case 'all':
       default:
         return <FriendList userFriends={userFriends} users={users} filterType="all" />;
@@ -229,19 +224,19 @@ export default function Contacts(){
 					</div>
 					<div className='flex justify-start mt-5'>
 						<button className='flex justify-center items-center pl-4 pr-2 border border-r-0 border-zinc-400 rounded-l-lg cursor-pointer'>
-							<img className='w-5 h-5' src={search} alt="Search" />
+							<img className='w-5 h-5 shrink-0' src={search} alt="Search" />
 						</button>
-						<input className='h-auto grow px-1 py-2.5 text-[16px] text-black dark:text-zinc-200 outline-0 border border-l-0 border-r-0 border-zinc-400' 
+						<input className='h-auto grow px-1 py-2.5 w-0 text-[16px] text-black dark:text-zinc-200 outline-0 border border-l-0 border-r-0 border-zinc-400' 
 						type="text" placeholder='Search username' />
 						<button 
 						className='flex justify-center items-center pl-4 pr-4 border border-l-0 border-zinc-400 rounded-r-lg cursor-pointer'>
-							<img className='w-5 h-5' src={addFriend} alt="Add Friend" />
+							<img className='w-5 h-5 shrink-0' src={addFriend} alt="Add Friend" />
 						</button>
 					</div>
 				</header>
 
 				<div className="w-full flex gap-y-2 items-center mt-5 font-poppins">
-        {['all', 'online', 'offline', 'requests'].map((tab) => (
+        {['all', 'online', 'requests'].map((tab) => (
           <button
             key={tab}
             onClick={() => setFilter(tab)}
@@ -258,10 +253,8 @@ export default function Contacts(){
 					<section className='flex grow w-full justify-center items-center pb-7 pt-3 border-b border-zinc-700'>
 						{renderContent()}
 					</section>
-
 					<SuggestedFriends />
 				</main>
-
 				
 			</div>
 		</>
