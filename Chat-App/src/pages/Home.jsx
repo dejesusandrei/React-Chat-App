@@ -96,7 +96,7 @@ function Home(){
 			<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} isMobile={isMobile}/>
 			
 			<main className={`h-dvh bg-zinc-950 py-1.5 px-1.5 sm:py-3.5 flex ${isMobile ? 'ml-0' : isSidebarOpen ? "ml-76" : "ml-20"}`}>
-				<aside className={`w-full md:w-136  ml-0 lg:ml-3 p-4 rounded-lg bg-zinc-800 ${activeChat ? "hidden lg:flex lg:flex-col" : "flex flex-col"}`}>
+				<aside className={`w-full  md:w-136  ml-0 lg:ml-3 p-4 rounded-lg bg-zinc-800 ${activeChat ? "hidden lg:flex lg:flex-col" : "flex flex-col"}`}>
 					{/* Outlet renders <Chats /> || <Contacts/> */}
 					<Outlet context={{ activeChat, setActiveChat, title, setTitle }}/>
 				</aside>

@@ -109,9 +109,9 @@ export default function ChatList(){
 								</div>
 								<span className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-zinc-900 ${isOnline ? "bg-green-500" : "bg-gray-500"}`}/>
 							</div>
-							<div className="flex flex-col text-left  font-roboto grow min-w-0 overflow-hidden">
-								<p className="font-semibold text-[15px] text-white">{`${friend?.firstName} ${friend?.lastName}`}</p>
-								<p className={`text-[13px] mb-1 font-semibold truncate text-zinc-400`}>
+							<div className="flex flex-col text-left font-roboto flex-1 min-w-0 overflow-hidden">
+								<p className="font-semibold text-[15px] text-white truncate">{`${friend?.firstName} ${friend?.lastName}`}</p>
+								<p className={`text-[13px] mb-1 font-semibold truncate w-full text-zinc-400`}>
 									{lastMessageText ? (
 										<>
 											{isSelfSender && <span className='text-zinc-400'>You: </span>}
