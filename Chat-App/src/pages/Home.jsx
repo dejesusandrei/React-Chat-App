@@ -16,6 +16,7 @@ function Home(){
 	const { user } = useContext(AuthContext);
 	const db = getDatabase(app);
 	const [users, setUsers] = useState([]);
+	const [title, setTitle] = useState(null);
 	// Para makita kung sino yung online
 	useEffect(() =>{
 		if (!user?.uid) return;
@@ -83,20 +84,21 @@ function Home(){
 			const selectedUser = users.find(u => u.uid === chatIdFromUrl);
 			if (selectedUser) {
 				setActiveChat(selectedUser);
+				setTitle(`${selectedUser.firstName} ${selectedUser.lastName}`);
 			}
 		}
 	}, [chatIdFromUrl, users])
 
 	return(
 		<>
-			<title>ReiChat</title>
+			<title>{`${title ? (`${title} | ReiChat`) : ('Reichat')}`}</title>
 
 			<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} isMobile={isMobile}/>
 			
 			<main className={`h-dvh bg-zinc-950 py-1.5 px-1.5 sm:py-3.5 flex ${isMobile ? 'ml-0' : isSidebarOpen ? "ml-76" : "ml-20"}`}>
 				<aside className={`w-full md:w-136  ml-0 lg:ml-3 p-4 rounded-lg bg-zinc-800 ${activeChat ? "hidden lg:flex lg:flex-col" : "flex flex-col"}`}>
 					{/* Outlet renders <Chats /> || <Contacts/> */}
-					<Outlet context={{ activeChat, setActiveChat }}/>
+					<Outlet context={{ activeChat, setActiveChat, title, setTitle }}/>
 				</aside>
 
 				<section className={`w-full h-full bg-zinc-800 grow rounded-lg mx-0 sm:mx-4 overflow-hidden ${activeChat ? "flex flex-col" : "hidden md:flex lg:flex-col"}`}>

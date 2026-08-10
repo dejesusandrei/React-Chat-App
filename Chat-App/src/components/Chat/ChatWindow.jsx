@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment, useContext, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
-import { getDatabase, ref, onValue, push, serverTimestamp } from 'firebase/database';
+import { getDatabase, ref, onValue, push, update, serverTimestamp } from 'firebase/database';
 import app from "../../firebase/firebase.config";
 import { AuthContext } from "../../context/AuthProvider";
 import ChatMessage from './ChatMessage'
@@ -49,12 +49,33 @@ export default function ChatWindow({activeChat, onBack}){
 		try {
 			// make a chat room id
 			const chatRoomId = [user.uid, activeChat.uid].sort().join("_");
-			await push(ref(db, `messages/${chatRoomId}`), {
+			const currentText = messageText;
+
+			// 1. Kumuha muna ng unique key para sa bagong message
+      const newMessageKey = push(ref(db, `messages/${chatRoomId}`)).key;
+
+			const lastChatData = {
+				lastMessage: currentText,
+				senderId: user.uid,
+				timestamp: serverTimestamp()
+			};
+			
+			const updates = {};
+
+			updates[`messages/${chatRoomId}/${newMessageKey}`] = {
 				senderId: user.uid,
 				receiverId: activeChat.uid,
-				text: messageText,
+				text: currentText,
 				timestamp: serverTimestamp(),
-			})
+      };
+
+			// Last chat inbox summary (Sender at Receiver)
+			updates[`lastChatMessage/${user.uid}/${activeChat.uid}`] = lastChatData;
+			updates[`lastChatMessage/${activeChat.uid}/${user.uid}`] = lastChatData;
+
+			// 4. Isang beses lang mag-ne-network request (Atomic Update)
+			await update(ref(db), updates);
+
 			setMessageText("");
 			if (textareaRef.current) {
         textareaRef.current.style.height = "auto";

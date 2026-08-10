@@ -12,15 +12,18 @@ export default function ChatList(){
 	const db = getDatabase(app);
 	const [users, setUsers] = useState([]);
 	const [userFriends, setUserFriends] = useState([]);
+	const [lastChat, setLastChat] = useState({});
 	const navigate = useNavigate();
 
-	const outletContext = useOutletContext() || {};
-	const activeChat = outletContext.activeChat;
-	const setActiveChat = outletContext.setActiveChat;
+	const { activeChat, setActiveChat, setTitle } = useOutletContext() || {};
+	// const activeChat = outletContext.activeChat;
+	// const setActiveChat = outletContext.setActiveChat;
 
 	const handeSelectChat = (friend) =>{
 		if(setActiveChat) setActiveChat(friend);
+		const titlePage = `${friend?.firstName} ${friend?.lastName}`;
 		navigate(`?id=${friend.uid}`, {replace: true});
+		// setTitle(titlePage);
 	}
 
 	useEffect(() =>{
@@ -55,13 +58,21 @@ export default function ChatList(){
       }
     });
 
+		// Get the last message of users
+		const userLastChatRef = ref(db, `lastChatMessage/${user.uid}`);
+		const unsubscribeUserLastChat = onValue(userLastChatRef, (snapshot) =>{
+			// stored bilang object para mabilis  hanapin
+			setLastChat(snapshot.exists() ? snapshot.val() : {})
+		});
+
 		return () => {
 			unsubscribes();
 			unsubscribeFriends();
+			unsubscribeUserLastChat();
 		};
 	}, [user?.uid, db]);
-
 	const filteredFreinds = users.filter((u) => userFriends.includes(u.uid));
+
 	return(
 		<>
 		{filteredFreinds.length === 0 ? (
@@ -83,6 +94,11 @@ export default function ChatList(){
 					const isOnline = Boolean(friend?.isOnline);
 					const isActive = activeChat?.uid === friend.uid;
 
+					// 1. Kunin ang last chat info gamit ang friend's UID bilang Key
+					const chatInfo = lastChat?.[friend.uid];
+					const lastMessageText = chatInfo?.lastMessage;
+					const isSelfSender = chatInfo?.senderId === user.uid;
+
 					return(
 						<button onClick={() => handeSelectChat(friend)}
 						key={friend?.uid} 
@@ -96,7 +112,14 @@ export default function ChatList(){
 							<div className="flex flex-col text-left  font-roboto grow min-w-0 overflow-hidden">
 								<p className="font-semibold text-[15px] text-white">{`${friend?.firstName} ${friend?.lastName}`}</p>
 								<p className={`text-[13px] mb-1 font-semibold truncate text-zinc-400`}>
-									{`You're now friends with ${friend?.firstName} ${friend?.lastName}`}
+									{lastMessageText ? (
+										<>
+											{isSelfSender && <span className='text-zinc-400'>You: </span>}
+											{lastMessageText}
+										</>
+									) : (
+										`You're now friends with ${friend?.firstName} ${friend?.lastName}`
+									)}
 								</p>
 							</div>
 						</button>
