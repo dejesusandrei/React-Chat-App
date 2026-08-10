@@ -54,7 +54,7 @@ function Request({user, db, users, setUsers, friendRequests, setFriendRequests})
 		<>
 			{friendRequests.length === 0 ? (
 				<div className="flex flex-col items-center mt-13">
-					<p className="font-roboto text-black dark:text-zinc-400 max-w-75 text-center">
+					<p className="font-roboto text-black dark:text-zinc-400 max-w-75 text-[14px] sm:text-[15px] text-center truncate">
 						You have no pending requests.
 					</p>
 				</div>
@@ -62,32 +62,44 @@ function Request({user, db, users, setUsers, friendRequests, setFriendRequests})
 				(
 				<div className="flex flex-col justify-center w-full gap-y-3 mt-2 overflow-scroll scrollbar-none">
 					<div className="text-black dark:text-white font-semibold text-[16.5px]">
-						<p>Friend Requests ({friendRequests.length})</p>
+						<p className='truncate'>Friend Requests ({friendRequests.length})</p>
 					</div>
 
 					{friendRequests.map(({senderUid}) =>{
 						const sender = users[senderUid];
 						return(
-							<div key={senderUid} className= 'flex gap-2.5 items-center grow h-12.5'>
-								<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full" style={{ backgroundColor: sender?.avatarColor}}>
-									{sender?.firstName[0].toUpperCase()}
+							<div key={senderUid} 
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-2.5 rounded-xl bg-zinc-900/50 sm:bg-transparent border border-zinc-800/40 sm:border-none transition-all">
+                {/* User Details */}
+								<div className="flex items-center gap-3 min-w-0 flex-1">
+									{/* Avatar */}
+									<div 
+										className="flex shrink-0 justify-center items-center text-white font-semibold w-11 h-11 rounded-full text-base" style={{ backgroundColor: sender?.avatarColor || "#4B5563" }}>
+										{sender?.firstName?.[0]?.toUpperCase() || "?"}
+									</div>
+									<div className="flex flex-col justify-center font-roboto min-w-0 flex-1">
+										<p className="font-bold text-[14px] text-white truncate">{sender ? `${sender.firstName} ${sender.lastName}` : "Loading user..."}</p>
+										<p className="text-[13px] text-gray-400 truncate">{sender?.email || ""}</p>
+									</div>
 								</div>
-								<div className="flex flex-col justify-center font-roboto grow ">
-									<p className="font-bold text-[14px] text-white">{`${sender?.firstName} ${sender?.lastName}`}</p>
-									<p className="text-[13px] text-gray-200 mb-1">{sender?.email}</p>
-								</div>
+								<div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+									<button 
+										onClick={() => handleAcceptRequest(senderUid)}
+										disabled={loadingUid === senderUid}
+										type="button"
+										className="flex-1 sm:flex-none flex justify-center items-center px-4 py-2 bg-zinc-100 hover:bg-zinc-300 dark:bg-zinc-100 dark:hover:bg-zinc-200 rounded-lg cursor-pointer transition-colors disabled:opacity-50">
+										<p className="text-[13px] sm:text-[14px] font-roboto font-semibold text-zinc-900">Accept</p>
+									</button>
 
-								<button onClick={() => handleAcceptRequest(senderUid)}
-								disabled={loadingUid}
-								className="flex justify-center items-center px-3.5 py-2 gap-x-2 bg-zinc-100 rounded-lg cursor-pointer hover:bg-zinc-300">
-									<p className="text-[14px] font-roboto font-semibold text-white dark:text-zinc-900">Accept</p>
-								</button>
-								<button onClick={() => handleDeclineRequest(senderUid)}
-								disabled={loadingUid}
-								className="flex justify-center items-center px-3.5 py-2 gap-x-2 bg-zinc-800 rounded-lg border border-zinc-300 cursor-pointer hover:bg-zinc-700">
-									<p className="text-[14px] font-roboto font-semibold text-black dark:text-zinc-200">Decline</p>
-								</button>
-							</div>
+									<button 
+										onClick={() => handleDeclineRequest(senderUid)}
+										disabled={loadingUid === senderUid}
+										type="button"
+										className="flex-1 sm:flex-none flex justify-center items-center px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg cursor-pointer transition-colors disabled:opacity-50">
+										<p className="text-[13px] sm:text-[14px] font-roboto font-semibold text-zinc-200">Decline</p>
+									</button>
+								</div>
+            </div>
 						);
 					})}
 				</div>
@@ -116,7 +128,7 @@ export function FriendList({userFriends, users, filterType = 'all'}){
 		<>
 			{filteredFriends.length === 0 ? (
 				<div className='flex flex-col items-center gap-1 mt-13'>
-					<p className=" font-roboto text-black dark:text-zinc-400 max-w-75 text-center">{emptySubtitles[filterType]}</p>
+					<p className=" font-roboto text-black dark:text-zinc-400 text-[14px] sm:text-[15px] max-w-75 text-center truncate">{emptySubtitles[filterType]}</p>
 				</div>
 			) : (
 				<div className="flex flex-col justify-center w-full gap-y-1 overflow-scroll scrollbar-none">
@@ -124,7 +136,7 @@ export function FriendList({userFriends, users, filterType = 'all'}){
 						const friendData = users[friendUid];
 						const isOnline = Boolean(friendData?.isOnline);
 						return(
-							<div key={friendUid} className= 'flex gap-2.5 items-center grow h-12.5 mt-4'>
+							<div key={friendUid} className= 'flex gap-2.5 items-center grow h-12.5 mt-2'>
 								<div className="relative shrink-0">
                   <div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full"style={{ backgroundColor: friendData?.avatarColor || "#4B5563" }}>
 										{friendData?.firstName?.[0]?.toUpperCase() || "?"}

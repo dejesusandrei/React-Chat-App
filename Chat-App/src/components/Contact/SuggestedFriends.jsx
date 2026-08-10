@@ -96,8 +96,8 @@ export default function SuggestedFriends(){
 	return(
 		<>
 			{suggestedFriends.length >= 1 ? (
-				<div className="flex flex-col justify-center mt-5 gap-y-3 overflow-scroll scrollbar-none">
-					<div className="text-black dark:text-white font-semibold text-[16.5px]">
+				<div className="max-h-full flex flex-col mt-4 gap-y-3 overflow-y-auto scrollbar-none">
+					<div className="text-black dark:text-white font-semibold text-[16.5px] truncate">
 						People you may know
 					</div>
 
@@ -107,7 +107,7 @@ export default function SuggestedFriends(){
 
 						return(
 							<div key={friend?.uid} className= 'flex gap-2.5 items-center grow h-12.5'>
-								<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full" style={{backgroundColor: friend?.avatarColor || "#4B5563"}}>
+								<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full shrink-0" style={{backgroundColor: friend?.avatarColor || "#4B5563"}}>
 									{friend?.firstName?.[0]?.toUpperCase() || "?"}
 								</div>
 								<div className="flex flex-col text-left font-roboto flex-1 min-w-0 overflow-hidden">
