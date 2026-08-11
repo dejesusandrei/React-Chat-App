@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { getDatabase, ref, onValue, onDisconnect, set } from 'firebase/database';
 import app from "../firebase/firebase.config";
 import { AuthContext } from "../context/AuthProvider";
+import { getAuth } from "firebase/auth";
 
 import Chats from "../components/Chat/Chats";
 import Sidebar from "../components/Sidebar";
@@ -15,8 +16,11 @@ import ChatWindow from "../components/Chat/ChatWindow";
 function Home(){
 	const { user } = useContext(AuthContext);
 	const db = getDatabase(app);
+	const auth = getAuth(app);
+
 	const [users, setUsers] = useState([]);
 	const [title, setTitle] = useState(null);
+
 	// Para makita kung sino yung online
 	useEffect(() =>{
 		if (!user?.uid) return;
@@ -46,7 +50,9 @@ function Home(){
 		});
 
 		return () => {
-			set(userStatusRef, false);
+			if (auth.currentUser) {
+        set(userStatusRef, false);
+      }
 			unsubscribeConnected();
 			unsubscribes();
 		};
@@ -101,7 +107,7 @@ function Home(){
 					<Outlet context={{ activeChat, setActiveChat, title, setTitle }}/>
 				</aside>
 
-				<section className={`h-full bg-zinc-800 grow rounded-lg overflow-hidden md:mx-2 min-w-0 ${activeChat ? "flex flex-col" : "hidden md:flex lg:flex-col"}`}>
+				<section className={`h-full bg-zinc-800 grow overflow-hidden rounded-lg md:mx-2 min-w-0 ${activeChat ? "flex flex-col w-full" : "hidden md:flex lg:flex-col"}`}>
 					<ChatWindow activeChat={activeChat} onBack={() => setActiveChat(null)}/>
 				</section>
 			</main>

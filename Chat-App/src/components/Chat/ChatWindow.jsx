@@ -96,8 +96,8 @@ export default function ChatWindow({activeChat, onBack}){
 				</div>
 			) : (
 				<>
-					<div className="flex justify-between items-center py-3 px-2 sm:p-4 font-roboto border-b border-zinc-900 w-full ">
-						<div className="flex gap-2 sm:gap-3 items-center grow min-w-0 pr-2">
+					<div className="flex justify-between  items-center py-3 px-2 sm:p-4 font-roboto border-b border-zinc-900 w-full ">
+						<div className="flex gap-2 sm:gap-3 items-center  min-w-0 pr-2 z-50">
 							<button 
 								onClick={() =>  onBack()} 
 								className="lg:hidden p-1.5 text-zinc-400 hover:text-white rounded-full active:bg-zinc-800 shrink-0">
@@ -111,20 +111,20 @@ export default function ChatWindow({activeChat, onBack}){
 
 							{/* Name Container */}
 							<div className="flex flex-col justify-center min-w-0 grow font-roboto">
-								<p className="font-bold text-[14px] sm:text-[17.5px] text-white truncate leading-tight">
+								<p className="font-bold text-[14px] sm:text-[17px] text-white truncate leading-tight">
 									{`${activeChat?.firstName || "User"} ${activeChat?.lastName || ""}`}
 								</p>
-								<span className={`text-[11px] sm:text-[12px] font-medium ${isOnline ? "text-green-500" : "text-gray-400"}`}>
+								<span className={`text-[11px] sm:text-[12px] font-medium truncate ${isOnline ? "text-green-500" : "text-gray-400"}`}>
                   {isOnline ? "Online" : "Offline"}
                 </span>
 							</div>
 						</div>
 
 						{/* Right Section: Action Buttons */}
-						<div className="flex justify-center items-center  sm:gap-x-2 shrink-0">
+						<div className="flex items-center gap-1 sm:gap-2 shrink-0 pl-10">
 							<button 
 								onClick={() => alert('Not available yet')} 
-								className="flex justify-center items-center cursor-pointer w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-zinc-800 active:bg-zinc-700 transition-colors"
+								className="flex justify-center items-center cursor-pointer w-9 h-9 sm:w-10 sm:h-10 rounded-full  hover:bg-zinc-800 active:bg-zinc-700 transition-colors"
 								title="Call">
 								<img className="w-4 h-4 sm:w-5.5 sm:h-5.5" src={Phone} alt="Call" />
 							</button>
@@ -143,13 +143,13 @@ export default function ChatWindow({activeChat, onBack}){
 
 					{/* 3. Bottom Chat Input Area */}
 					<div className="p-3 border-t border-zinc-900 bg-zinc-800">
-						<div className="flex items-end gap-2 bg-zinc-700/60 rounded-2xl p-2 border border-zinc-700 focus-within:border-violet-400 transition">
+						<div className="flex items-end gap-3 bg-zinc-700/60 rounded-2xl p-2 border overflow-hidden border-zinc-700 focus-within:border-violet-400 transition">
 							<textarea
 								ref={textareaRef}
 								value={messageText}
 								placeholder="Type a message..."
 								rows={1}
-								className="grow bg-transparent text-white text-base scrollbar-none placeholder-zinc-400 resize-none outline-none px-2 py-1.5 max-h-32 overflow-y-auto"
+								className="w-0 grow bg-transparent text-white text-base scrollbar-none placeholder-zinc-400 resize-none outline-none px-2 py-1.5 max-h-32 overflow-y-auto"
 								onInput={(e) => {
 									// Kusa itong lalaki depende sa haba ng text hanggang sa max-h-32 (128px)
 									e.target.style.height = "auto";
@@ -166,7 +166,7 @@ export default function ChatWindow({activeChat, onBack}){
 							/>
 							{/* Send Button */}
 							<button 
-								className="flex justify-center items-center w-9 h-9 bg-violet-500 hover:bg-violet-600 text-white rounded-full transition shrink-0 cursor-pointer"
+								className="flex justify-center items-center w-9 h-9 bg-violet-500 overflow-hidden hover:bg-violet-600 text-white rounded-full transition shrink-0 cursor-pointer"
 								onClick={() => { sendMessage(); }}>
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 pl-0.5">
 									<path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
