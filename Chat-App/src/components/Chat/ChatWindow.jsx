@@ -21,6 +21,19 @@ export default function ChatWindow({activeChat, onBack}){
 
 	// reset the text height
 	const textareaRef = useRef(null);
+	const chatContainerRef = useRef(null);
+
+	// Auto-scroll function papuntang pinaka-ilalim ng chat
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
+
+	// FIX: Mag-i-scroll sa bottom tuwing may bago o nadagdag na message
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 	
 	// Load the messages
 	useEffect(() =>{
@@ -137,7 +150,7 @@ export default function ChatWindow({activeChat, onBack}){
 					</div>
 
 					{/* 2. Chat Messages Container (Scrollable Area) */}
-					<div className="grow overflow-y-auto scrollbar-none p-4 bg-zinc-800 space-y-3 flex flex-col justify-end">
+					<div ref={chatContainerRef} className="flex-1 min-h-0 overflow-y-auto scrollbar-none p-4 gap-y-2 bg-zinc-800 space-y-3 flex flex-col-reverse">
 						<ChatMessage messages={messages} activeChat={activeChat} />
 					</div>
 
