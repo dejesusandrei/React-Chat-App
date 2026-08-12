@@ -96,7 +96,7 @@ export default function SuggestedFriends(){
 	return(
 		<>
 			{suggestedFriends.length >= 1 ? (
-				<div className="max-h-full flex flex-col mt-4 gap-y-3 overflow-y-auto scrollbar-none">
+				<div className="flex flex-col w-full mt-4 gap-y-2 shrink-0 pb-4 over">
 					<div className="text-black dark:text-white font-semibold text-[16.5px] truncate">
 						People you may know
 					</div>
@@ -106,21 +106,21 @@ export default function SuggestedFriends(){
 						const isLoading = loadingUid === friend?.uid;
 
 						return(
-							<div key={friend?.uid} className= 'flex gap-2.5 items-center grow h-12.5'>
-								<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full shrink-0" style={{backgroundColor: friend?.avatarColor || "#4B5563"}}>
+							<div key={friend?.uid} className= 'flex gap-2.5 items-center shrink-0 h-12.5'>
+								<div className="image flex justify-center items-center text-white font-semibold w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0" style={{backgroundColor: friend?.avatarColor || "#4B5563"}}>
 									{friend?.firstName?.[0]?.toUpperCase() || "?"}
 								</div>
 								<div className="flex flex-col text-left font-roboto flex-1 min-w-0 overflow-hidden">
-									<p className="font-bold text-[14px] text-white truncate">{`${friend?.firstName || "User"} ${friend?.lastName || ""}`}</p>
-									<p className="text-[13px] text-gray-200 mb-1 truncate">{friend?.email || ""}</p>
+									<p className="font-bold text-[13px] sm:text-[14px] text-white truncate">{`${friend?.firstName || "User"} ${friend?.lastName || ""}`}</p>
+									<p className="text-[12px] sm:text-[13px] text-gray-200 mb-1 truncate">{friend?.email || ""}</p>
 								</div>
 								<button onClick={() => handleToggleFriendRequest(friend?.uid)} 
 								disabled={isLoading}
 								type="button"
-								className={`flex justify-center items-center px-3.5 py-2 gap-x-2 rounded-lg cursor-pointer ${
+								className={`flex justify-center items-center px-2.5 sm:px-3.5 py-1.5 sm:py-2 gap-x-2 rounded-lg cursor-pointer ${
                   isRequested ? 'bg-zinc-700 text-white': 'bg-zinc-100 dark:bg-zinc-100 hover:bg-zinc-300'}`}>
 									{/* <div className='flex justify-center items-center'><img className='w-5 h-5' src={addFriend} alt="Add Friend"/></div> */}
-									<p className={`text-[14px] font-roboto font-semibold ${isRequested ? 'text-white' : 'text-zinc-900' }`}>
+									<p className={`text-[13px] sm:text-[14px] font-roboto font-semibold ${isRequested ? 'text-white' : 'text-zinc-900' }`}>
                     {isRequested ? 'Cancel Request' : 'Add friend'}
                   </p>
 								</button>

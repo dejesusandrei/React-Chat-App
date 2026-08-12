@@ -21,7 +21,7 @@ import settings from '../assets/setting.png'
 import logout from '../assets/logout.png'
 
 
-export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile}) {
+export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, sidebarHidden}) {
 	const { user } = useContext(AuthContext);
 	const navigate = useNavigate();
 	const auth = getAuth(app);
@@ -130,21 +130,24 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile}) {
 								{user?.displayName[0].toUpperCase()}
 							</div>
 							{isSidebarOpen && (
-								<div className="flex flex-col justify-center">
+								<div className="flex flex-col text-left">
 									<p className="font-bold text-[13px] lg:text-[14px]">{user?.displayName}</p>
-									<p className="text-[12px] pl-0.5 lg:text-[13px] text-gray-200 mb-1">{user?.email}</p>
+									<p className="text-[12px]  lg:text-[13px] text-gray-200 mb-1">{user?.email}</p>
 								</div>
 							)}
 						</button>
-						<button onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-						className="w-9 h-9 flex justify-center items-center bg-zinc-700 cursor-pointer hover:bg-zinc-600 rounded-full">
-							<img className='w-5 h-5' src={sidebar} alt="Sidebar" />
-						</button>
+						{/* Close sidebar button within 600 width */}
+						{sidebarHidden && (
+							<button onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+							className="w-9 h-9 flex justify-center items-center bg-zinc-700 cursor-pointer hover:bg-zinc-600 rounded-full">
+								<img className='w-5 h-5' src={sidebar} alt="Sidebar" />
+							</button>
+						)}
 					</div>
 				</div>
 
 				{isProfileOpen && (
-					<div className={`flex absolute ${isSidebarOpen ? 'bottom-20 left-27' : 'bottom-28 left-4.75'} flex-col bg-[#242526] text-zinc-200 w-62 px-2 py-2 gap-y-2 rounded-xl shadow-2xl z-50 border border-zinc-700/40
+					<div className={`flex absolute ${sidebarHidden ? isSidebarOpen ? 'bottom-20 left-27' : 'bottom-28 left-4.75' : 'bottom-17 left-4.75 '} flex-col bg-[#242526] text-zinc-200 w-62 px-2 py-2 gap-y-2 rounded-xl shadow-2xl z-50 border border-zinc-700/40
 						/* Dito ginawa ang maliit na arrow tail sa bottom-left */
 						after:content-[''] 
 						after:absolute 

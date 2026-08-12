@@ -138,14 +138,14 @@ export function FriendList({userFriends, users, filterType = 'all'}){
 						return(
 							<div key={friendUid} className= 'flex gap-2.5 items-center grow h-12.5 mt-2'>
 								<div className="relative shrink-0">
-                  <div className="image flex justify-center items-center text-white font-semibold w-10 h-10 rounded-full"style={{ backgroundColor: friendData?.avatarColor || "#4B5563" }}>
+                  <div className="image flex justify-center items-center text-white font-semibold w-9 h-9 sm:w-10 sm:h-10 rounded-full"style={{ backgroundColor: friendData?.avatarColor || "#4B5563" }}>
 										{friendData?.firstName?.[0]?.toUpperCase() || "?"}
                   </div>
                   <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-zinc-900 ${isOnline ? "bg-green-500" : "bg-gray-500"}`}/>
                 </div>
 								<div className="flex flex-col text-left font-roboto flex-1 min-w-0 overflow-hidden">
-									<p className="font-bold text-[14px] text-white truncate">{`${friendData?.firstName} ${friendData?.lastName}`}</p>
-									<p className={`text-[13px] mb-1 font-semibold ${isOnline ? "text-green-500" : "text-gray-400"}`}>{isOnline ? "Online" : "Offline"}</p>
+									<p className="font-bold text-[13px] sm:text-[14px] text-white truncate">{`${friendData?.firstName} ${friendData?.lastName}`}</p>
+									<p className={`text-[12px] sm:text-[13px] mb-1 font-semibold ${isOnline ? "text-green-500" : "text-gray-400"}`}>{isOnline ? "Online" : "Offline"}</p>
 								</div>
 								<button
 								className='flex justify-center items-center px-3.5 py-2 gap-x-2 rounded-lg cursor-pointer'>
@@ -229,7 +229,7 @@ export default function Contacts(){
 
 	return(
 		<>
-			<div className='h-full'>
+			<div className='flex flex-col h-full min-h-0 overflow-hidden'>
 				<header className="flex flex-col ">
 					<div className="header ">
 						<h1 className="text-[25px] font-roboto font-bold text-black dark:text-white">Contacts</h1>
@@ -261,8 +261,8 @@ export default function Contacts(){
 				</div>
 
 
-				<main className='flex flex-col '>
-					<section className='flex grow w-full justify-center items-center pb-7 pt-3 border-b border-zinc-700'>
+				<main className='flex flex-col flex-1 h-full min-h-0 overflow-y-auto scrollbar-none'>
+					<section className='flex shrink-0 w-full justify-center items-center pb-7  pt-3 border-b border-zinc-700'>
 						{renderContent()}
 					</section>
 					<SuggestedFriends />
