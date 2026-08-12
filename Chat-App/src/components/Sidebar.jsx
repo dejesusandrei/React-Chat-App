@@ -147,7 +147,7 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, side
 				</div>
 
 				{isProfileOpen && (
-					<div className={`flex absolute ${sidebarHidden ? isSidebarOpen ? 'bottom-20 left-27' : 'bottom-28 left-4.75' : 'bottom-17 left-4.75 '} flex-col bg-[#242526] text-zinc-200 w-62 px-2 py-2 gap-y-2 rounded-xl shadow-2xl z-50 border border-zinc-700/40
+					<div className={`flex absolute ${sidebarHidden ? isSidebarOpen ? 'bottom-20 left-27' : 'bottom-28 left-4.75' : 'bottom-17.5 left-4.75 '} flex-col bg-[#242526] text-zinc-200 w-62 px-2 py-2 gap-y-2 rounded-xl shadow-2xl z-50 border border-zinc-700/40
 						/* Dito ginawa ang maliit na arrow tail sa bottom-left */
 						after:content-[''] 
 						after:absolute 

@@ -4,7 +4,7 @@ import ChatList from './ChatList'
 export default function Chats(){
 	return(
 		<>
-			<div className='flex flex-col h-full pb-6'>
+			<div className='flex flex-col h-full min-h-0 overflow-hidden pb-6'>
 				<header className="flex flex-col">
 						<div className="header ">
 							<h1 className="text-[25px] font-roboto font-bold text-black dark:text-white">Chats</h1>
@@ -17,7 +17,7 @@ export default function Chats(){
 						</div>
 				</header>
 
-				<section className='flex mt-4 grow w-full flex-col '>
+				<section className='flex-1 min-h-0 overflow-y-auto scrollbar-none mt-4 flex flex-col w-full'>
 					<ChatList/>
 				</section>
 			</div>

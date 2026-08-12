@@ -89,7 +89,7 @@ export default function ChatList(){
 				</div>
 			</div>
 		) : (
-			<div className="flex flex-col justify-center w-full gap-y-1 overflow-scroll scrollbar-none">
+			<div className="flex flex-col justify-center w-full gap-y-1">
 				{filteredFreinds.map((friend) =>{
 					const isOnline = Boolean(friend?.isOnline);
 					const isActive = activeChat?.uid === friend.uid;
