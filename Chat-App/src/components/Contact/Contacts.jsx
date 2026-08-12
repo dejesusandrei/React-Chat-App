@@ -53,8 +53,8 @@ function Request({user, db, users, setUsers, friendRequests, setFriendRequests})
 	return(
 		<>
 			{friendRequests.length === 0 ? (
-				<div className="flex flex-col items-center mt-13">
-					<p className="font-roboto text-black dark:text-zinc-400 max-w-75 text-[14px] sm:text-[15px] text-center truncate">
+				<div className="flex flex-col items-center mt-13 w-full min-w-0 overflow-hidden">
+					<p className="font-roboto text-black dark:text-zinc-400 max-w-75 text-[14px] sm:text-[15px] text-center w-full truncate">
 						You have no pending requests.
 					</p>
 				</div>
@@ -127,8 +127,8 @@ export function FriendList({userFriends, users, filterType = 'all'}){
 	return(
 		<>
 			{filteredFriends.length === 0 ? (
-				<div className='flex flex-col items-center gap-1 mt-13'>
-					<p className=" font-roboto text-black dark:text-zinc-400 text-[14px] sm:text-[15px] max-w-75 text-center truncate">{emptySubtitles[filterType]}</p>
+				<div className='flex flex-col items-center gap-1 mt-13 w-full min-w-0 overflow-hidden'>
+					<p className=" font-roboto text-black dark:text-zinc-400 text-[14px] sm:text-[15px] text-center w-full truncate">{emptySubtitles[filterType]}</p>
 				</div>
 			) : (
 				<div className="flex flex-col justify-center w-full gap-y-1 overflow-scroll scrollbar-none">
