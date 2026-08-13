@@ -7,90 +7,54 @@ import { AuthContext } from "../../context/AuthProvider";
 import addFriend from '../../assets/add-friend.png'
 import noChats from '../../assets/conversation.png'
 
-export default function ChatList(){
+export default function ChatList({ friends, users, lastChat, search }){
 	const { user } = useContext(AuthContext);
-	const db = getDatabase(app);
-	const [users, setUsers] = useState([]);
-	const [userFriends, setUserFriends] = useState([]);
-	const [lastChat, setLastChat] = useState({});
-	const navigate = useNavigate();
 
+	const navigate = useNavigate();
 	const { activeChat, setActiveChat, setTitle } = useOutletContext() || {};
-	// const activeChat = outletContext.activeChat;
-	// const setActiveChat = outletContext.setActiveChat;
 
 	const handeSelectChat = (friend) =>{
 		if(setActiveChat) setActiveChat(friend);
 		const titlePage = `${friend?.firstName} ${friend?.lastName}`;
 		navigate(`?id=${friend.uid}`, {replace: true});
-		// setTitle(titlePage);
 	}
 
-	useEffect(() =>{
-		if (!user?.uid) return;
+	const filteredFriends = users.filter((u) => {
+		const isFriend = friends.includes(u.uid)
+		const fullName = `${u.firstName} ${u.lastName}`.toLowerCase();
+		const matchesSearch = fullName.includes(search.toLowerCase());
 
-		// Get all users
-		const userRef = ref(db, "users");
-		const unsubscribes = onValue(userRef, (snapshot) =>{
-			if(snapshot.exists()){
-				const data = snapshot.val();
-				const usersArray = Object.entries(data).map(([uid, value]) => ({
-					uid,
-					...value
-				}));
-				setUsers(usersArray);
-			}
-		});
-
-		// Get all freinds
-		const friendsRef = ref(db, `friends/${user.uid}`);
-		const unsubscribeFriends = onValue(friendsRef, (snapshot) =>{
-			if (snapshot.exists()) {
-        const data = snapshot.val();
-        // Hanapin ang UIDs na may status na "friends"
-        const confirmedUIDs = Object.entries(data)
-          .filter(([_, details]) => details.status === "friends" || details === true)
-          .map(([friendUid]) => friendUid);
-
-        setUserFriends(confirmedUIDs);
-      } else {
-        setUserFriends([]);
-      }
-    });
-
-		// Get the last message of users
-		const userLastChatRef = ref(db, `lastChatMessage/${user.uid}`);
-		const unsubscribeUserLastChat = onValue(userLastChatRef, (snapshot) =>{
-			// stored bilang object para mabilis  hanapin
-			setLastChat(snapshot.exists() ? snapshot.val() : {})
-		});
-
-		return () => {
-			unsubscribes();
-			unsubscribeFriends();
-			unsubscribeUserLastChat();
-		};
-	}, [user?.uid, db]);
-	const filteredFreinds = users.filter((u) => userFriends.includes(u.uid));
+    return isFriend && matchesSearch;
+	});
 
 	return(
 		<>
-		{filteredFreinds.length === 0 ? (
-			<div className='flex justify-center items-center w-full h-full'>
-				<div className='flex flex-col items-center gap-1'>
-					<div className='flex justify-center items-center'><img src={noChats} alt="No Conversation" /></div>
-					<h2 className="text-[20px] sm:text-[24px] font-roboto font-semibold mt-1 text-black dark:text-white">No conversation yet</h2>
-					<p className="text-[13px] sm:text-sm font-roboto text-black dark:text-zinc-400 max-w-75 text-center">Start a conversation by adding a friend to send messages, share media, and keep in touch.</p>
+		{filteredFriends.length === 0 ? (
+			<>
+				{search ? (
+					<div className='flex items-center justify-center'>
+						<p className="text-sm text-zinc-400 mt-2 wrap-break-word">
+							No matching contacts found for "{search}"
+						</p>
+					</div>
+				) : (
+				<div className='flex justify-center items-center w-full h-full'>
+					<div className='flex flex-col items-center gap-1'>
+						<div className='flex justify-center items-center'><img src={noChats} alt="No Conversation" /></div>
+						<h2 className="text-[20px] sm:text-[24px] font-roboto font-semibold mt-1 text-black dark:text-white">No conversation yet</h2>
+						<p className="text-[13px] sm:text-sm font-roboto text-black dark:text-zinc-400 max-w-75 text-center">Start a conversation by adding a friend to send messages, share media, and keep in touch.</p>
 
-					<NavLink to="../contacts" className=" flex justify-center items-center gap-x-2 mt-6 bg-white rounded-xl px-6 py-2.75 cursor-pointer">
-						<div className='flex justify-center items-center'><img className=' w-5 h-5 sm:w-7 sm:h-7' src={addFriend} alt="Add Friend"/></div>
-						<p className="text-[14px] sm:text-[16px] font-roboto font-semibold text-white dark:text-zinc-900">Add Friend</p>
-					</NavLink>
+						<NavLink to="../contacts" className=" flex justify-center items-center gap-x-2 mt-6 bg-white rounded-xl px-6 py-2.75 cursor-pointer">
+							<div className='flex justify-center items-center'><img className=' w-5 h-5 sm:w-7 sm:h-7' src={addFriend} alt="Add Friend"/></div>
+							<p className="text-[14px] sm:text-[16px] font-roboto font-semibold text-white dark:text-zinc-900">Add Friend</p>
+						</NavLink>
+					</div>
 				</div>
-			</div>
+				)}
+			</>
 		) : (
 			<div className="flex flex-col justify-center w-full gap-y-1">
-				{filteredFreinds.map((friend) =>{
+				{filteredFriends.map((friend) =>{
 					const isOnline = Boolean(friend?.isOnline);
 					const isActive = activeChat?.uid === friend.uid;
 
