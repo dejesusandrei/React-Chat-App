@@ -7,7 +7,7 @@ import '../../index.css'
 
 import noChats from '../../assets/conversation.png'
 import addFriend from '../../assets/add-friend-gray.png'
-import search from '../../assets/search.png'
+import searchIcon from '../../assets/search.png'
 import dots from '../../assets/dots.png'
 
 function Request({user, db, users, setUsers, friendRequests, setFriendRequests}){
@@ -109,16 +109,27 @@ function Request({user, db, users, setUsers, friendRequests, setFriendRequests})
 	);
 }
 
-export function FriendList({userFriends, users, filterType = 'all'}){
+export function FriendList({userFriends, users, filterType = 'all', search}){
+
 	const filteredFriends = userFriends.filter((friendUid) => {
-    const friendData = users[friendUid];
-    if (!friendData) return false;
-    const isUserOnline = Boolean(friendData.isOnline);
-    if (filterType === 'online') {
-      return isUserOnline === true; 
-    }
-    return true; // 'all' tab
-  });
+		const friendData = users[friendUid];
+		// 1. Guard clause: Ensure friend data exists before accessing properties
+		if (!friendData) return false;
+
+		// 2. Online filter check
+		if (filterType === 'online' && !friendData.isOnline) {
+			return false;
+		}
+
+		// 3. Early exit if search is empty (saves string formatting overhead)
+		if (!search) return true;
+
+		// 4. Safe property access with fallback defaults
+		const firstName = friendData.firstName ?? '';
+		const lastName = friendData.lastName ?? '';
+		const fullName = `${firstName} ${lastName}`.toLowerCase();
+		return fullName.includes(search);
+	});
 
   const emptySubtitles = {
     all: "Add friends and start connecting with people.",
@@ -127,9 +138,17 @@ export function FriendList({userFriends, users, filterType = 'all'}){
 	return(
 		<>
 			{filteredFriends.length === 0 ? (
-				<div className='flex flex-col items-center gap-1 mt-13 w-full min-w-0 overflow-hidden'>
-					<p className=" font-roboto text-black dark:text-zinc-400 text-[14px] sm:text-[15px] text-center w-full truncate">{emptySubtitles[filterType]}</p>
-				</div>
+				<>
+					{search ? (
+						<div className='flex flex-col items-center gap-1 mt-13 w-full min-w-0 overflow-hidden'>
+							<p className=" font-roboto w-full text-black dark:text-zinc-400 text-[14px] sm:text-[15px] text-center">No matching contacts found for "{search}"</p>
+						</div>
+					) : (
+						<div className='flex flex-col items-center gap-1 mt-13 w-full min-w-0 overflow-hidden'>
+							<p className=" font-roboto w-full text-black dark:text-zinc-400 text-[14px] sm:text-[15px] text-center  ">{emptySubtitles[filterType]}</p>
+						</div>
+					)}
+				</>
 			) : (
 				<div className="flex flex-col justify-center w-full gap-y-1 overflow-scroll scrollbar-none">
 					{filteredFriends.map((friendUid) =>{
@@ -162,11 +181,13 @@ export function FriendList({userFriends, users, filterType = 'all'}){
 
 export default function Contacts(){
 	const { user } = useContext(AuthContext);
+	const db = getDatabase(app);
+
 	const [userFriends, setUserFriends] = useState([]);
 	const [filter, setFilter] = useState('all');
 	const [friendRequests, setFriendRequests] = useState([]);
 	const [users, setUsers] = useState([]);
-	const db = getDatabase(app);
+	const [search, setSearch] = useState("");
 
 	useEffect(() =>{
 		if (!user?.uid) return;
@@ -223,7 +244,7 @@ export default function Contacts(){
         return <FriendList userFriends={userFriends} users={users} filterType="online" />;
       case 'all':
       default:
-        return <FriendList userFriends={userFriends} users={users} filterType="all" />;
+        return <FriendList userFriends={userFriends} users={users} filterType="all" search={search.toLowerCase()} />;
     }
   };
 
@@ -231,19 +252,21 @@ export default function Contacts(){
 		<>
 			<div className='flex flex-col h-full min-h-0 overflow-hidden'>
 				<header className="flex flex-col ">
-					<div className="header ">
+					<div className="header flex justify-between items-center">
 						<h1 className="text-[25px] font-roboto font-bold text-black dark:text-white">Contacts</h1>
+						<button 
+						className='flex justify-center items-center pl-4 pr-4  cursor-pointer'>
+							<img className='w-5 h-5  sm:w-5.5 sm:h-5.5 shrink-0' src={addFriend} alt="Add Friend" />
+						</button>
 					</div>
 					<div className='flex justify-start mt-5'>
 						<button className='flex justify-center items-center pl-4 pr-2 border border-r-0 border-zinc-400 rounded-l-lg cursor-pointer'>
-							<img className='w-5 h-5 shrink-0' src={search} alt="Search" />
+							<img className='w-5 h-5 shrink-0' src={searchIcon} alt="Search" />
 						</button>
-						<input className='h-auto grow px-1 py-2.5 w-0 text-[16px] text-black dark:text-zinc-200 outline-0 border border-l-0 border-r-0 border-zinc-400' 
+						<input value={search}
+						onChange={(e) => setSearch(e.target.value)}
+						className='h-auto grow px-1 py-2.5 w-0 text-[16px] text-black dark:text-zinc-200 outline-0 border border-l-0 rounded-r-lg  border-zinc-400' 
 						type="text" placeholder='Search username' />
-						<button 
-						className='flex justify-center items-center pl-4 pr-4 border border-l-0 border-zinc-400 rounded-r-lg cursor-pointer'>
-							<img className='w-5 h-5 shrink-0' src={addFriend} alt="Add Friend" />
-						</button>
 					</div>
 				</header>
 

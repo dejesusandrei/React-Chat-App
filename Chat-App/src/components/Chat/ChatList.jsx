@@ -33,8 +33,8 @@ export default function ChatList({ friends, users, lastChat, search }){
 			<>
 				{search ? (
 					<div className='flex items-center justify-center'>
-						<p className="text-sm text-zinc-400 mt-2 wrap-break-word">
-							No matching contacts found for "{search}"
+						<p className="text-sm text-zinc-400 mt-2 wrap-break-word text-center">
+							No matching chats found for "{search}"
 						</p>
 					</div>
 				) : (
