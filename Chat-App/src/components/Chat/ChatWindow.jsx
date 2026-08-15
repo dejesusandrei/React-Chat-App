@@ -134,7 +134,7 @@ export default function ChatWindow({activeChat, onBack}){
 						</div>
 
 						{/* Right Section: Action Buttons */}
-						<div className="flex items-center gap-1 sm:gap-2 shrink-0 pl-10">
+						<div className="flex items-center sm:gap-2 shrink-0">
 							<button 
 								onClick={() => alert('Not available yet')} 
 								className="flex justify-center items-center cursor-pointer w-9 h-9 sm:w-10 sm:h-10 rounded-full  hover:bg-zinc-800 active:bg-zinc-700 transition-colors"

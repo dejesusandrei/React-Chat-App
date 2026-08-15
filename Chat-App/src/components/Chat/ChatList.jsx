@@ -9,21 +9,58 @@ import noChats from '../../assets/conversation.png'
 
 export default function ChatList({ friends, users, lastChat, search }){
 	const { user } = useContext(AuthContext);
-
-	const navigate = useNavigate();
 	const { activeChat, setActiveChat, setTitle } = useOutletContext() || {};
+	const navigate = useNavigate();
 
-	const handeSelectChat = (friend) =>{
-		if(setActiveChat) setActiveChat(friend);
-		const titlePage = `${friend?.firstName} ${friend?.lastName}`;
-		navigate(`?id=${friend.uid}`, {replace: true});
-	}
+	// Initial State Loader: Binabasa ang na-save na read state sa LocalStorage sa unang pag-load ng page
+	const [readChats, setReadChats] = useState(() =>{
+		if (!user?.uid) return {};
+		try {
+			const save = localStorage.getItem(`readChats_${user.uid}`);
+			return save ? JSON.parse(save) : {};
+		} catch (error) {
+			return {};
+		}
+	});
+
+	// Storage Sync: Ina-update ang LocalStorage tuwing magbabago ang readChats state
+	useEffect(() =>{
+		if(user?.uid) localStorage.setItem(`readChats_${user.uid}`, JSON.stringify(readChats));		
+	}, [readChats, user?.uid]);
+
+	// Read State Auto-Update: Awtomatikong mina-mark bilang READ ang kasalukuyang binuksan na chat
+	useEffect(() => {
+    if (!activeChat?.uid) return;
+		const currentTimestamp = lastChat?.[activeChat.uid]?.timestamp;
+		if (currentTimestamp) {
+			setReadChats((prev) => {
+				if (prev[activeChat.uid] === currentTimestamp) return prev;
+				return {
+					...prev,
+					[activeChat.uid]: currentTimestamp,
+				};
+			});
+		}
+  }, [activeChat?.uid, lastChat]);
+
+	// Manual Action Trigger: Inililipat ang active chat at mina-mark bilang READ ang napiling kaibigan kapag na-click
+	const handeSelectChat = (friend) => {
+    if (!friend?.uid) return;
+    const currentMessageTimestamp = lastChat?.[friend.uid]?.timestamp;
+    if (currentMessageTimestamp) {
+      setReadChats((prev) => ({
+        ...prev,
+        [friend.uid]: currentMessageTimestamp,
+      }));
+    }
+    if (setActiveChat) setActiveChat(friend);
+    navigate(`?id=${friend.uid}`, { replace: true });
+  };
 
 	const filteredFriends = users.filter((u) => {
 		const isFriend = friends.includes(u.uid)
 		const fullName = `${u.firstName} ${u.lastName}`.toLowerCase();
 		const matchesSearch = fullName.includes(search.toLowerCase());
-
     return isFriend && matchesSearch;
 	});
 
@@ -61,7 +98,15 @@ export default function ChatList({ friends, users, lastChat, search }){
 					// 1. Kunin ang last chat info gamit ang friend's UID bilang Key
 					const chatInfo = lastChat?.[friend.uid];
 					const lastMessageText = chatInfo?.lastMessage;
+					const lastMessageTimestamp = chatInfo?.timestamp;
 					const isSelfSender = chatInfo?.senderId === user.uid;
+					const isFriendSender = Boolean(chatInfo?.senderId) && !isSelfSender;
+
+					const lastReadTimestamp = readChats[friend.uid];
+					
+					// UI Rule Check: Magiging TRUE (Unread/White) lang kung galing sa kaibigan ang message 
+					// HINDI mo kasalukuyang binubuksan ang chat, at BAGO ang timestamp nito
+					const isUnread = isFriendSender && !isActive && (!lastReadTimestamp || lastMessageTimestamp > lastReadTimestamp)
 
 					return(
 						<button onClick={() => handeSelectChat(friend)}
@@ -75,7 +120,7 @@ export default function ChatList({ friends, users, lastChat, search }){
 							</div>
 							<div className="flex flex-col text-left font-roboto flex-1 min-w-0 overflow-hidden">
 								<p className="font-semibold text-[14px] sm:text-[15px] text-white truncate">{`${friend?.firstName} ${friend?.lastName}`}</p>
-								<p className={`text-[12px] sm:text-[13px] mb-1 font-semibold truncate w-full text-zinc-400`}>
+								<p className={`text-[12px] sm:text-[13px] mb-1 font-semibold truncate w-full ${isUnread ? 'text-white' : 'text-zinc-400'}`}>
 									{lastMessageText ? (
 										<>
 											{isSelfSender && <span className='text-zinc-400'>You: </span>}
