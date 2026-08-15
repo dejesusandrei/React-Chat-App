@@ -91,7 +91,13 @@ export default function ChatList({ friends, users, lastChat, search }){
 			</>
 		) : (
 			<div className="flex flex-col justify-center w-full gap-y-1">
-				{filteredFriends.map((friend) =>{
+				{[...filteredFriends].sort((a, b) => {
+					// Kunin ang timestamp ng huling chat kay Friend A at Friend B.
+        	// Kapag walang chat (undefined), 0 ang gagamiting oras (pinakaluma).
+					const timeA = lastChat?.[a.uid]?.timestamp || 0; // 1000 kahapon
+					const timeB = lastChat?.[b.uid]?.timestamp || 0; // 3000 ngayon
+					return timeB - timeA; // 3000 - 2000 = +2000 (POSITIVE)
+				}).map((friend) =>{
 					const isOnline = Boolean(friend?.isOnline);
 					const isActive = activeChat?.uid === friend.uid;
 
@@ -103,7 +109,7 @@ export default function ChatList({ friends, users, lastChat, search }){
 					const isFriendSender = Boolean(chatInfo?.senderId) && !isSelfSender;
 
 					const lastReadTimestamp = readChats[friend.uid];
-					
+
 					// UI Rule Check: Magiging TRUE (Unread/White) lang kung galing sa kaibigan ang message 
 					// HINDI mo kasalukuyang binubuksan ang chat, at BAGO ang timestamp nito
 					const isUnread = isFriendSender && !isActive && (!lastReadTimestamp || lastMessageTimestamp > lastReadTimestamp)
