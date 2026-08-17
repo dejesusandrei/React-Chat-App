@@ -63,7 +63,7 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, side
 
 	return(
 		<>
-			<aside className={`h-screen bg-zinc-900 text-white fixed top-0 left-0 px-3 py-4 flex flex-col font-roboto  ${isMobile ? 'hidden w-0' : isSidebarOpen ? "w-76" : "w-18"}`}>
+			<aside className={`h-screen bg-zinc-900 text-white fixed top-0 left-0 px-3 py-4 flex flex-col font-roboto z-50  ${isMobile ? 'hidden w-0' : isSidebarOpen ? "w-76" : "w-18"}`}>
 				<div className="flex flex-col items-center justify-between h-full">
 					
 					<div className="w-full flex flex-col gap-y-1">
@@ -174,7 +174,6 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, side
 								<span className="text-black dark:text-zinc-200 font-semibold text-[14px] sm:text-[15px]">Log out</span>
 							</div>
 						</button>
-
 					</div>
 				)}
 				
