@@ -3,6 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import { ref, set, update, onValue, getDatabase } from "firebase/database";
 import app from "../../firebase/firebase.config";
 import { AuthContext } from "../../context/AuthProvider";
+import { formatShortTime } from '../../utility/formatShortTime';
 
 import addFriend from '../../assets/add-friend.png'
 import noChats from '../../assets/conversation.png'
@@ -107,6 +108,7 @@ export default function ChatList({ friends, users, lastChat, search }){
 					const lastMessageTimestamp = chatInfo?.timestamp;
 					const isSelfSender = chatInfo?.senderId === user.uid;
 					const isFriendSender = Boolean(chatInfo?.senderId) && !isSelfSender;
+					const timeStamp = chatInfo?.timestamp;
 
 					const lastReadTimestamp = readChats[friend.uid];
 
@@ -131,6 +133,7 @@ export default function ChatList({ friends, users, lastChat, search }){
 										<>
 											{isSelfSender && <span className='text-zinc-400'>You: </span>}
 											{lastMessageText}
+											{<span className='pl-1 text-zinc-400'>· {formatShortTime(timeStamp)}</span>}
 										</>
 									) : (
 										`You're now friends with ${friend?.firstName} ${friend?.lastName}`
