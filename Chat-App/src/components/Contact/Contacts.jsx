@@ -116,10 +116,19 @@ export function FriendList({userFriends, users, user, db, filterType = 'all', se
 	async function handleRemoveFriends(friendUid){
 		if (!user?.uid || !friendUid) return;
 		try {
+			const chatRoomId = [user.uid, friendUid].sort().join("_");
 			const updates = {};
 
-			updates[`friends/${user.uid}/${friendUid}`] = null;
-			updates[`friends/${friendUid}/${user.uid}`] = null;
+			// Remove friendship from both users
+        updates[`friends/${user.uid}/${friendUid}`] = null;
+        updates[`friends/${friendUid}/${user.uid}`] = null;
+
+			// Remove chat messages
+			updates[`messages/${chatRoomId}`] = null;
+
+			// Remove last chat information from both users
+			updates[`lastChatMessage/${user.uid}/${friendUid}`] = null;
+			updates[`lastChatMessage/${friendUid}/${user.uid}`] = null;
 			await update(ref(db), updates);
 		} catch (error) {
 			console.error("Error removing friend request:", error);
