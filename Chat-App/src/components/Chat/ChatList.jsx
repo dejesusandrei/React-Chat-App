@@ -58,16 +58,19 @@ export default function ChatList({ friends, users, lastChat, search }){
     navigate(`?id=${friend.uid}`, { replace: true });
   };
 
-	const filteredFriends = users.filter((u) => {
-		const isFriend = friends.includes(u.uid)
+	const filteredChats = users.filter((u) => {
+		const isFriend = friends.includes(u.uid);
+		// Sinu-suri kung may record ang user na ito sa lastChat object
+		// this is for the user unfriend you, you can still messages each other
+    const hasChatHistory = Boolean(lastChat?.[u.uid]);
 		const fullName = `${u.firstName} ${u.lastName}`.toLowerCase();
 		const matchesSearch = fullName.includes(search.toLowerCase());
-    return isFriend && matchesSearch;
+    return (isFriend || hasChatHistory) && matchesSearch;
 	});
 
 	return(
 		<>
-		{filteredFriends.length === 0 ? (
+		{filteredChats.length === 0 ? (
 			<>
 				{search ? (
 					<div className='flex items-center justify-center'>
@@ -92,7 +95,7 @@ export default function ChatList({ friends, users, lastChat, search }){
 			</>
 		) : (
 			<div className="flex flex-col justify-center w-full gap-y-1">
-				{[...filteredFriends].sort((a, b) => {
+				{[...filteredChats].sort((a, b) => {
 					// Kunin ang timestamp ng huling chat kay Friend A at Friend B.
         	// Kapag walang chat (undefined), 0 ang gagamiting oras (pinakaluma).
 					const timeA = lastChat?.[a.uid]?.timestamp || 0; // 1000 kahapon
@@ -136,7 +139,7 @@ export default function ChatList({ friends, users, lastChat, search }){
 											{<span className='pl-1 text-zinc-400'>· {formatShortTime(timeStamp)}</span>}
 										</>
 									) : (
-										`You're now friends with ${friend?.firstName} ${friend?.lastName}`
+										`Start a conversation with ${friend?.firstName} ${friend?.lastName}`
 									)}
 								</p>
 							</div>

@@ -123,12 +123,12 @@ export function FriendList({userFriends, users, user, db, filterType = 'all', se
         updates[`friends/${user.uid}/${friendUid}`] = null;
         updates[`friends/${friendUid}/${user.uid}`] = null;
 
-			// Remove chat messages
-			updates[`messages/${chatRoomId}`] = null;
+			// // Remove chat messages
+			// updates[`messages/${chatRoomId}`] = null;
 
-			// Remove last chat information from both users
-			updates[`lastChatMessage/${user.uid}/${friendUid}`] = null;
-			updates[`lastChatMessage/${friendUid}/${user.uid}`] = null;
+			// // Remove last chat information from both users
+			// updates[`lastChatMessage/${user.uid}/${friendUid}`] = null;
+			// updates[`lastChatMessage/${friendUid}/${user.uid}`] = null;
 			await update(ref(db), updates);
 		} catch (error) {
 			console.error("Error removing friend request:", error);
