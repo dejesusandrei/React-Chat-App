@@ -110,8 +110,21 @@ function Request({user, db, users, setUsers, friendRequests, setFriendRequests})
 	);
 }
 
-export function FriendList({userFriends, users, filterType = 'all', search}){
+export function FriendList({userFriends, users, user, db, filterType = 'all', search}){
 	const [openMenu, setOpenMenu] = useState(null);
+
+	async function handleRemoveFriends(friendUid){
+		if (!user?.uid || !friendUid) return;
+		try {
+			const updates = {};
+
+			updates[`friends/${user.uid}/${friendUid}`] = null;
+			updates[`friends/${friendUid}/${user.uid}`] = null;
+			await update(ref(db), updates);
+		} catch (error) {
+			console.error("Error removing friend request:", error);
+		}
+	}
 
 	const handleToggleMenu = (friendUid) => {
     setOpenMenu((prev) =>
@@ -190,7 +203,7 @@ export function FriendList({userFriends, users, filterType = 'all', search}){
 										<div className="absolute right-0 top-10 z-50 w-40 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl overflow-hidden">
 											<button
 												onClick={() => {
-													console.log("Remove friend:",friendUid);
+													handleRemoveFriends(friendUid);
 													setOpenMenu(null);
 												}}
 												className="flex items-center gap-1 w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-zinc-700 cursor-pointer" >
@@ -272,10 +285,10 @@ export default function Contacts(){
           <Request user={user} db={db} users={users} setUsers={setUsers} friendRequests={friendRequests} setFriendRequests={setFriendRequests}/>
         );
       case 'online':
-        return <FriendList userFriends={userFriends} users={users} filterType="online" />;
+        return <FriendList userFriends={userFriends} users={users} filterType="online" user={user} db={db}/>;
       case 'all':
       default:
-        return <FriendList userFriends={userFriends} users={users} filterType="all" search={search.toLowerCase()} />;
+        return <FriendList userFriends={userFriends} users={users} filterType="all" user={user} db={db} search={search.toLowerCase()} />;
     }
   };
 
