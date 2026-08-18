@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { ref, set, update, onValue, getDatabase } from "firebase/database";
 import app from "../../firebase/firebase.config";
 import { AuthContext } from "../../context/AuthProvider";
@@ -9,6 +9,7 @@ import noChats from '../../assets/conversation.png'
 import addFriend from '../../assets/add-friend-gray.png'
 import searchIcon from '../../assets/search.png'
 import dots from '../../assets/dots.png'
+import unfriend from '../../assets/unfriend.png'
 
 function Request({user, db, users, setUsers, friendRequests, setFriendRequests}){
 	const [loadingUid, setLoadingUid] = useState(null);
@@ -110,21 +111,34 @@ function Request({user, db, users, setUsers, friendRequests, setFriendRequests})
 }
 
 export function FriendList({userFriends, users, filterType = 'all', search}){
+	const [openMenu, setOpenMenu] = useState(null);
+
+	const handleToggleMenu = (friendUid) => {
+    setOpenMenu((prev) =>
+      prev === friendUid ? null : friendUid
+    );
+	};
+
+	// Hindi gagana ang useRef dahil naka map and multiple refs
+	// Instead i use closest, meaning you can have many friend menus.
+	useEffect(() => {
+    const handleClickOutside = (event) => {
+			if (!event.target.closest(".friend-menu")) {
+				setOpenMenu(null);
+			}
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+	}, []);
 
 	const filteredFriends = userFriends.filter((friendUid) => {
 		const friendData = users[friendUid];
-		// 1. Guard clause: Ensure friend data exists before accessing properties
 		if (!friendData) return false;
-
-		// 2. Online filter check
-		if (filterType === 'online' && !friendData.isOnline) {
-			return false;
-		}
-
-		// 3. Early exit if search is empty (saves string formatting overhead)
+		if (filterType === 'online' && !friendData.isOnline) return false;
 		if (!search) return true;
 
-		// 4. Safe property access with fallback defaults
 		const firstName = friendData.firstName ?? '';
 		const lastName = friendData.lastName ?? '';
 		const fullName = `${firstName} ${lastName}`.toLowerCase();
@@ -166,10 +180,27 @@ export function FriendList({userFriends, users, filterType = 'all', search}){
 									<p className="font-bold text-[13px] sm:text-[14px] text-white truncate">{`${friendData?.firstName} ${friendData?.lastName}`}</p>
 									<p className={`text-[12px] sm:text-[13px] mb-1 font-semibold ${isOnline ? "text-green-500" : "text-gray-400"}`}>{isOnline ? "Online" : "Offline"}</p>
 								</div>
-								<button
-								className='flex justify-center items-center px-3.5 py-2 gap-x-2 rounded-lg cursor-pointer'>
-									<img className='w-5 h-5 shrink-0' src={dots} alt="Dots" />
-								</button>
+								<div className='relative friend-menu'>
+									<button onClick={() =>	handleToggleMenu(friendUid)}
+									className={`flex justify-center items-center px-2 py-2 gap-x-2 rounded-full cursor-pointer hover:bg-zinc-700 ${openMenu === friendUid ? 'bg-zinc-700' : ''}`}>
+										<img className='w-5 h-5 shrink-0' src={dots} alt="Dots" />
+									</button>
+									{/* Dropdown */}
+									{openMenu === friendUid && (
+										<div className="absolute right-0 top-10 z-50 w-40 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl overflow-hidden">
+											<button
+												onClick={() => {
+													console.log("Remove friend:",friendUid);
+													setOpenMenu(null);
+												}}
+												className="flex items-center gap-1 w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-zinc-700 cursor-pointer" >
+												<img className='h-7 w-7 shrink-0' src={unfriend} alt="Unfriend icon" />
+												<span>Remove friend</span>
+											</button>
+										</div>
+									)}
+								</div>
+
 							</div>
 						);
 					})}
