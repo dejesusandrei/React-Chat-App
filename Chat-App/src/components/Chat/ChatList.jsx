@@ -7,11 +7,51 @@ import { formatShortTime } from '../../utility/formatShortTime';
 
 import addFriend from '../../assets/add-friend.png'
 import noChats from '../../assets/conversation.png'
+import deleteIcon from '../../assets/delete.png'
+import moreIcon from '../../assets/more.png'
 
 export default function ChatList({ friends, users, lastChat, search }){
 	const { user } = useContext(AuthContext);
 	const { activeChat, setActiveChat, setTitle } = useOutletContext() || {};
 	const navigate = useNavigate();
+
+	const [openMenu, setOpenMenu] = useState(null);
+
+	async function handleRemoveChats(friendUid){
+		if (!user?.uid || !friendUid) return;
+		try {
+			const chatRoomId = [user.uid, friendUid].sort().join("_");
+			const updates = {};
+			// Remove chat messages
+			updates[`messages/${chatRoomId}`] = null;
+			// Remove last chat information from both users
+			updates[`lastChatMessage/${user.uid}/${friendUid}`] = null;
+			updates[`lastChatMessage/${friendUid}/${user.uid}`] = null;
+			await update(ref(db), updates);
+		} catch (error) {
+			console.error("Error removing friend chat request:", error);
+		}
+	}
+
+	const handleToggleMenu = (friendUid) => {
+		setOpenMenu((prev) =>
+			prev === friendUid ? null : friendUid
+		);
+	};
+
+	// Hindi gagana ang useRef dahil naka map and multiple refs
+	// Instead i use closest, meaning you can have many friend menus.
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (!event.target.closest(".friend-menu")) {
+				setOpenMenu(null);
+			}
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
 
 	// Initial State Loader: Binabasa ang na-save na read state sa LocalStorage sa unang pag-load ng page
 	const [readChats, setReadChats] = useState(() =>{
@@ -120,30 +160,39 @@ export default function ChatList({ friends, users, lastChat, search }){
 					const isUnread = isFriendSender && !isActive && (!lastReadTimestamp || lastMessageTimestamp > lastReadTimestamp)
 
 					return(
-						<button onClick={() => handeSelectChat(friend)}
-						key={friend?.uid} 
-						className={`flex gap-2.5 items-center w-full p-2 rounded-lg cursor-pointer transition-colors ${isActive ? "bg-zinc-700/80" : "hover:bg-zinc-700/40"}`}>
-							<div className="relative shrink-0">
-								<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 sm:w-12 sm:h-12 rounded-full"style={{ backgroundColor: friend?.avatarColor || "#4B5563" }}>
-									{friend?.firstName?.[0]?.toUpperCase() || "?"}
+							<button onClick={() => handeSelectChat(friend)}
+							key={friend?.uid} 
+							className={`flex gap-2.5 items-center w-full p-2 rounded-lg cursor-pointer transition-colors group ${isActive ? "bg-zinc-700/50" : "[&:not(:has(.friend-menu:hover))]:hover:bg-zinc-700/20"}`}>
+								<div className="relative shrink-0">
+									<div className="image flex justify-center items-center text-white font-semibold w-10 h-10 sm:w-12 sm:h-12 rounded-full"style={{ backgroundColor: friend?.avatarColor || "#4B5563" }}>
+										{friend?.firstName?.[0]?.toUpperCase() || "?"}
+									</div>
+									<span className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-zinc-900 ${isOnline ? "bg-green-500" : "bg-gray-500"}`}/>
 								</div>
-								<span className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-zinc-900 ${isOnline ? "bg-green-500" : "bg-gray-500"}`}/>
-							</div>
-							<div className="flex flex-col text-left font-roboto flex-1 min-w-0 overflow-hidden">
-								<p className="font-semibold text-[14px] sm:text-[15px] text-white truncate">{`${friend?.firstName} ${friend?.lastName}`}</p>
-								<p className={`text-[12px] sm:text-[13px] mb-1 font-semibold truncate w-full ${isUnread ? 'text-white' : 'text-zinc-400'}`}>
-									{lastMessageText ? (
-										<>
-											{isSelfSender && <span className='text-zinc-400'>You: </span>}
-											{lastMessageText}
-											{<span className='pl-1 text-zinc-400'>· {formatShortTime(timeStamp)}</span>}
-										</>
-									) : (
-										`Start a conversation with ${friend?.firstName} ${friend?.lastName}`
-									)}
-								</p>
-							</div>
-						</button>
+								<div className="flex flex-col text-left font-roboto flex-1 min-w-0 overflow-hidden">
+									<p className="font-semibold text-[14px] sm:text-[15px] text-white truncate">{`${friend?.firstName} ${friend?.lastName}`}</p>
+									<p className={`text-[12px] sm:text-[13px] mb-1 font-semibold truncate w-full ${isUnread ? 'text-white' : 'text-zinc-400'}`}>
+										{lastMessageText ? (
+											<>
+												{isSelfSender && <span className='text-zinc-400'>You: </span>}
+												{lastMessageText}
+												{<span className='pl-1 text-zinc-400'>· {formatShortTime(timeStamp)}</span>}
+											</>
+										) : (
+											`Start a conversation with ${friend?.firstName} ${friend?.lastName}`
+										)}
+									</p>
+								</div>
+								<div className='relative friend-menu shrink-0 opacity-0 group-hover:opacity-100 transition-opacity'>
+									<div onClick={(e) =>	{
+										e.stopPropagation(); 
+										console.log(friend.uid);
+									}}
+									className={`flex justify-center items-center px-2 py-2 gap-x-2 rounded-full cursor-pointer bg-zinc-700/50 hover:bg-zinc-700/80`}>
+										<img className='w-5 h-5 shrink-0' src={moreIcon} alt="More icon" />
+									</div>
+								</div>
+							</button>
 					);
 				})}
 			</div>
