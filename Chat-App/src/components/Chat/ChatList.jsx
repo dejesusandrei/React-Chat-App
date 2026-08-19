@@ -1,6 +1,6 @@
 import { NavLink, useOutletContext, useNavigate } from 'react-router-dom';
-import { useEffect, useState, useContext } from "react";
-import { ref, set, update, onValue, getDatabase } from "firebase/database";
+import { useEffect, useState, useContext, useRef } from "react";
+import { ref, update } from "firebase/database";
 import app from "../../firebase/firebase.config";
 import { AuthContext } from "../../context/AuthProvider";
 import { formatShortTime } from '../../utility/formatShortTime';
@@ -10,12 +10,28 @@ import noChats from '../../assets/conversation.png'
 import deleteIcon from '../../assets/delete.png'
 import moreIcon from '../../assets/more.png'
 
-export default function ChatList({ friends, users, lastChat, search }){
+export default function ChatList({ friends, users, lastChat, search, db }){
 	const { user } = useContext(AuthContext);
 	const { activeChat, setActiveChat, setTitle } = useOutletContext() || {};
-	const navigate = useNavigate();
-
 	const [openMenu, setOpenMenu] = useState(null);
+	const navigate = useNavigate();
+	
+	// Long press handler for mobile to delete a messages/chats
+	const timerRef = useRef(null);
+	const handleTouchStart = (friendUid) => {
+  if (timerRef.current) clearTimeout(timerRef.current);
+		timerRef.current = setTimeout(() => {
+			handleToggleMenu(friendUid);
+		}, 500);
+	};
+
+	const handleTouchEnd = () => {
+		if (timerRef.current) {
+			clearTimeout(timerRef.current);
+			timerRef.current = null;
+		}
+	};
+
 
 	async function handleRemoveChats(friendUid){
 		if (!user?.uid || !friendUid) return;
@@ -160,7 +176,11 @@ export default function ChatList({ friends, users, lastChat, search }){
 					const isUnread = isFriendSender && !isActive && (!lastReadTimestamp || lastMessageTimestamp > lastReadTimestamp)
 
 					return(
-							<button onClick={() => handeSelectChat(friend)}
+							<button
+							onClick={() => handeSelectChat(friend)}
+							onTouchStart={() => handleTouchStart(friend?.uid)}
+							onTouchEnd={handleTouchEnd}
+							onTouchMove={handleTouchEnd} // to prevent opening the more/menu in the chat while scrolling
 							key={friend?.uid} 
 							className={`flex gap-2.5 items-center w-full p-2 rounded-lg cursor-pointer transition-colors group ${isActive ? "bg-zinc-700/50" : "[&:not(:has(.friend-menu:hover))]:hover:bg-zinc-700/20"}`}>
 								<div className="relative shrink-0">
@@ -183,14 +203,28 @@ export default function ChatList({ friends, users, lastChat, search }){
 										)}
 									</p>
 								</div>
-								<div className='relative friend-menu shrink-0 opacity-0 group-hover:opacity-100 transition-opacity'>
+								<div className={`relative friend-menu shrink-0 transition-opacity ${openMenu === friend?.uid ? "opacity-100 " : "opacity-0 sm:group-hover:opacity-100"}`}>
 									<div onClick={(e) =>	{
-										e.stopPropagation(); 
-										console.log(friend.uid);
+										e.stopPropagation(); // prevent event bubbling for buttons
+										handleToggleMenu(friend?.uid);
 									}}
 									className={`flex justify-center items-center px-2 py-2 gap-x-2 rounded-full cursor-pointer bg-zinc-700/50 hover:bg-zinc-700/80`}>
-										<img className='w-5 h-5 shrink-0' src={moreIcon} alt="More icon" />
+										<img className='w-4 h-4 sm:w-5 sm:h-5 shrink-0' src={moreIcon} alt="More icon" />
 									</div>
+									{openMenu === friend?.uid && (
+										<div className="absolute right-0 top-10 z-50 w-35 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl overflow-hidden">
+											<div
+												onClick={(e) => {
+													e.stopPropagation();
+													handleRemoveChats(friend?.uid);
+													setOpenMenu(null);
+												}}
+												className="flex text-left items-center gap-3  px-3 py-2.5  text-sm text-red-400 hover:bg-zinc-700 cursor-pointer" >
+												<img className='w-4.5 h-4.5 sm:h-5 sm:w-5 shrink-0' src={deleteIcon} alt="Delete icon" />
+												<span>Delete chat</span>
+											</div>
+										</div>
+									)}
 								</div>
 							</button>
 					);

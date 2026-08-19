@@ -81,7 +81,7 @@ export default function Chats(){
 				</header>
 
 				<section className='flex-1 min-h-0 overflow-y-auto scrollbar-none mt-4 flex flex-col w-full'>
-					<ChatList friends={friends} users={users} lastChat={lastChat} search={search}/>
+					<ChatList friends={friends} users={users} lastChat={lastChat} search={search} db={db}/>
 				</section>
 			</div>
 		</>

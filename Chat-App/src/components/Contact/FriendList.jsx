@@ -90,7 +90,7 @@ export default function FriendList({userFriends, users, user, db, filterType = '
 								<div className='relative friend-menu'>
 									<button onClick={() =>	handleToggleMenu(friendUid)}
 									className={`flex justify-center items-center px-2 py-2 gap-x-2 rounded-full cursor-pointer hover:bg-zinc-700 ${openMenu === friendUid ? 'bg-zinc-700' : ''}`}>
-										<img className='w-5 h-5 shrink-0' src={dots} alt="Dots" />
+										<img className='w-4.5 h-4.5 sm:w-5 sm:h-5 shrink-0' src={dots} alt="Dots" />
 									</button>
 									{/* Dropdown */}
 									{openMenu === friendUid && (
@@ -100,8 +100,8 @@ export default function FriendList({userFriends, users, user, db, filterType = '
 													handleRemoveFriends(friendUid);
 													setOpenMenu(null);
 												}}
-												className="flex items-center gap-1 w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-zinc-700 cursor-pointer" >
-												<img className='h-7 w-7 shrink-0' src={unfriend} alt="Unfriend icon" />
+												className="flex items-center gap-1 px-3 py-2 text-left text-sm text-red-400 hover:bg-zinc-700 cursor-pointer" >
+												<img className='w-6 h-6 sm:h-7 sm:w-7 shrink-0' src={unfriend} alt="Unfriend icon" />
 												<span>Remove friend</span>
 											</button>
 										</div>
