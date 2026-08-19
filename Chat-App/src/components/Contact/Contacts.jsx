@@ -95,11 +95,11 @@ export default function Contacts(){
 					</div>
 					<div className='flex justify-start mt-5'>
 						<button className='flex justify-center items-center pl-4 pr-2 border border-r-0 border-zinc-400 rounded-l-lg cursor-pointer'>
-							<img className='w-5 h-5 shrink-0' src={searchIcon} alt="Search" />
+							<img className='w-4 h-4 sm:w-5 sm:h-5 shrink-0' src={searchIcon} alt="Search" />
 						</button>
 						<input value={search}
 						onChange={(e) => setSearch(e.target.value)}
-						className='h-auto grow px-1 py-2.5 w-0 text-[16px] text-black dark:text-zinc-200 outline-0 border border-l-0 rounded-r-lg  border-zinc-400' 
+						className='h-auto grow px-1 py-2.5 w-0 text-sm sm:text-[16px] text-black dark:text-zinc-200 outline-0 border border-l-0 rounded-r-lg  border-zinc-400' 
 						type="text" placeholder='Search username' />
 					</div>
 				</header>
