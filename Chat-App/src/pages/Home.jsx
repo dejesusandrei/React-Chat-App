@@ -12,6 +12,7 @@ import useWindowSize from '../hooks/useWindowSize'
 import Contacts from "../components/Contact/Contacts";
 import Notifications from "../components/Notification/Notifications";
 import ChatWindow from "../components/Chat/ChatWindow";
+import AddFriendModal from "../components/Contact/AddFriendModal";
 
 function Home(){
 	const { user } = useContext(AuthContext);
@@ -20,6 +21,7 @@ function Home(){
 
 	const [users, setUsers] = useState([]);
 	const [title, setTitle] = useState(null);
+	const [openModal, setOpenModal] = useState(false);
 
 	// Para makita kung sino yung online
 	useEffect(() =>{
@@ -101,18 +103,23 @@ function Home(){
 			<title>{`${title ? (`${title} | ReiChat`) : ('Reichat')}`}</title>
 
 			
-			<main className={`h-dvh bg-zinc-950 overflow-hidden py-1.5 px-1.5 sm:py-3.5 flex ${isMobile ? 'ml-0' : isSidebarOpen ? "ml-76" : "ml-18"}`}>
+			<main className={`relative h-dvh bg-zinc-950 overflow-hidden py-1.5 px-1.5 sm:py-3.5 flex ${isMobile ? 'ml-0' : isSidebarOpen ? "ml-76" : "ml-18"}`}>
 				<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} isMobile={isMobile} sidebarHidden={sidebarHidden}/>
 
 				<aside className={`w-full lg:w-96 xl:w-md shrink-0 h-full p-3 overflow-hidden rounded-lg bg-zinc-800 ${activeChat ? "hidden lg:flex lg:flex-col" : "flex flex-col"}`}>
 					{/* Outlet renders <Chats /> || <Contacts/> */}
-					<Outlet context={{ activeChat, setActiveChat, title, setTitle }}/>
+					<Outlet context={{ activeChat, setActiveChat, title, setTitle, openModal, setOpenModal }}/>
 				</aside>
 
 				<section className={`h-full bg-zinc-800 grow overflow-hidden rounded-lg md:mx-2 min-w-0 ${activeChat ? "flex flex-col w-full" : "hidden md:flex lg:flex-col"}`}>
 					<ChatWindow activeChat={activeChat} onBack={() => setActiveChat(null)}/>
 				</section>
+
+				{openModal && (
+					<AddFriendModal isOpen={openModal} onClose={() => setOpenModal((prev) => !prev)}/>
+				)}
 			</main>
+
 			
 		</>
 	);

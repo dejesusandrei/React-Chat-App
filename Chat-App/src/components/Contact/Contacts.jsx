@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { ref, set, update, onValue, getDatabase } from "firebase/database";
 import app from "../../firebase/firebase.config";
 import { AuthContext } from "../../context/AuthProvider";
@@ -16,6 +17,8 @@ import unfriend from '../../assets/unfriend.png'
 export default function Contacts(){
 	const { user } = useContext(AuthContext);
 	const db = getDatabase(app);
+
+	const { setOpenModal, openModal } = useOutletContext() || {};
 
 	const [userFriends, setUserFriends] = useState([]);
 	const [filter, setFilter] = useState('all');
@@ -84,12 +87,13 @@ export default function Contacts(){
 
 	return(
 		<>
-			<div className='flex flex-col h-full min-h-0 overflow-hidden'>
+			<div className='relative flex flex-col h-full min-h-0 overflow-hidden'>
 				<header className="flex flex-col ">
 					<div className="header flex justify-between items-center">
 						<h1 className="text-[25px] font-roboto font-bold text-black dark:text-white">Contacts</h1>
 						<button 
-						className='flex justify-center items-center pl-4 pr-4  cursor-pointer'>
+						onClick={() => setOpenModal((prev) => !prev)}
+							className='flex justify-center items-center pl-4 pr-4  cursor-pointer'>
 							<img className='w-5 h-5  sm:w-5.5 sm:h-5.5 shrink-0' src={addFriend} alt="Add Friend" />
 						</button>
 					</div>
@@ -124,7 +128,6 @@ export default function Contacts(){
 					</section>
 					<SuggestedFriends />
 				</main>
-				
 			</div>
 		</>
 	);

@@ -142,6 +142,7 @@ export default function ChatWindow({activeChat, onBack}){
 								<img className="w-4 h-4 sm:w-5.5 sm:h-5.5" src={Phone} alt="Call" />
 							</button>
 							<button 
+								onClick={() => alert('Not available yet')} 
 								className="flex justify-center items-center cursor-pointer w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-zinc-800 active:bg-zinc-700 transition-colors"
 								title="Conversation Information">
 								<img className="w-4.5 h-4.5 sm:w-6 sm:h-6" src={Info} alt="Info" />

@@ -147,7 +147,7 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, side
 				</div>
 
 				{isProfileOpen && (
-					<div className={`flex absolute ${sidebarHidden ? isSidebarOpen ? 'bottom-20 left-27' : 'bottom-28 left-4.75' : 'bottom-17.5 left-4.75 '} flex-col bg-[#242526] text-zinc-200 w-62 px-2 py-2 gap-y-2 rounded-xl shadow-2xl z-50 border border-zinc-700/40
+					<div className={`flex absolute ${sidebarHidden ? isSidebarOpen ? 'bottom-20 left-27' : 'bottom-28 left-4.75' : 'bottom-17.5 left-4.75 '} flex-col bg-[#242526] text-zinc-200 w-52 sm:w-62 px-2 py-2 gap-y-2 rounded-xl shadow-2xl z-50 border border-zinc-700/40
 						/* Dito ginawa ang maliit na arrow tail sa bottom-left */
 						after:content-[''] 
 						after:absolute 
@@ -162,15 +162,15 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, side
 						<button onClick={() => console.log('Settings')}
 						className="flex items-center cursor-pointer border-b border-zinc-700">
 							<div className="flex gap-x-3 items-center w-full  hover:bg-zinc-600 hover:rounded-md px-2 py-2 mb-2">
-								<img className="shrink-0 w-5 h-5" src={settings} alt="Settings" />
-								<span className="text-black dark:text-zinc-200 font-semibold">Settings</span>
+								<img className="shrink-0 w-4 h-4 sm:w-5 sm:h-5" src={settings} alt="Settings" />
+								<span className="text-black dark:text-zinc-200 font-semibold text-[14px] sm:text-[15px]">Settings</span>
 							</div>
 						</button>
 
 						<button onClick={() => handleLogout()}
 						className="flex items-center cursor-pointer">
 							<div className="flex gap-x-3 pr-2 items-center w-full  hover:bg-zinc-600 hover:rounded-md px-2 py-2 mb-2">
-								<img className="shrink-0 w-5 h-5" src={logout} alt="Settings" />
+								<img className="shrink-0 w-4 h-4 sm:w-5 sm:h-5" src={logout} alt="Settings" />
 								<span className="text-black dark:text-zinc-200 font-semibold text-[14px] sm:text-[15px]">Log out</span>
 							</div>
 						</button>
