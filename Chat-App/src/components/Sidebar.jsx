@@ -21,7 +21,7 @@ import settings from '../assets/setting.png'
 import logout from '../assets/logout.png'
 
 
-export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, sidebarHidden}) {
+export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, sidebarHidden, friendRequests}) {
 	const { user } = useContext(AuthContext);
 	const navigate = useNavigate();
 	const auth = getAuth(app);
@@ -93,7 +93,7 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, side
 						</NavLink>
 
 						<NavLink to="/home/contacts" className={({ isActive }) =>
-							`flex items-center h-12.5 px-3 rounded-md ${isSidebarOpen? "justify-start gap-3": "justify-center"} 
+							`relative flex items-center h-12.5 px-3 rounded-md ${isSidebarOpen? "justify-start gap-3": "justify-center"} 
 							${isActive? "bg-zinc-800": "hover:bg-zinc-800"}`}>
 							{({ isActive }) => (
 									<>
@@ -101,6 +101,7 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, side
 												<img src={isActive ? contactHover : contact} alt="Contacts" />
 										</div>
 										{isSidebarOpen && (<p className={isActive ? "text-white font-semibold" : "text-gray-300 font-semibold"}>Contacts</p>)}
+										{friendRequests.length > 0 && (<span className={`absolute flex items-center ${isSidebarOpen ? 'bottom-4 right-1' : 'bottom-2 right-1'} justify-center min-w-4 h-4 pr-0.5 text-[11px] font-bold text-white bg-red-500 rounded-full`}>{friendRequests.length}</span>)}	
 									</>
 							)}
 						</NavLink>

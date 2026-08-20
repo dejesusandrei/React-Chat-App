@@ -18,11 +18,10 @@ export default function Contacts(){
 	const { user } = useContext(AuthContext);
 	const db = getDatabase(app);
 
-	const { setOpenModal, openModal } = useOutletContext() || {};
+	const { setOpenModal, openModal, friendRequests, setFriendRequests } = useOutletContext() || {};
 
 	const [userFriends, setUserFriends] = useState([]);
 	const [filter, setFilter] = useState('all');
-	const [friendRequests, setFriendRequests] = useState([]);
 	const [users, setUsers] = useState([]);
 	const [search, setSearch] = useState("");
 
@@ -34,23 +33,6 @@ export default function Contacts(){
 		const unsubscribe = onValue(userRef, (snapshot) => {
 			if(snapshot.exists()){ setUsers(snapshot.val()); }
 		})
-
-		// get requests
-		const requestRef = ref(db, (`friendRequests/${user.uid}`));
-		const unsubscribeRequests = onValue(requestRef, (snapshot) =>{
-			if(snapshot.exists()){
-				const data = snapshot.val();
-
-				const incomingList = Object.entries(data)
-					.filter(([_, value]) => value?.status === 'received')
-					.map(([senderUid, value]) => ({
-						senderUid,
-						timestamp: value.timestamp,
-					}));
-				
-				setFriendRequests(incomingList);
-			}else{ setFriendRequests([]); }
-		});
 
 		// Get Friends
 		const friendsRef = ref(db, `friends/${user.uid}`);
@@ -66,7 +48,6 @@ export default function Contacts(){
 
 		return () =>{
 			unsubscribe();
-			unsubscribeRequests();
 			unsubscribeFriends();
 		}
 	}, [user?.uid, db]);

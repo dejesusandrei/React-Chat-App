@@ -21,6 +21,7 @@ function Home(){
 
 	const [users, setUsers] = useState([]);
 	const [title, setTitle] = useState(null);
+	const [friendRequests, setFriendRequests] = useState([]);
 	const [openModal, setOpenModal] = useState(false);
 
 	// Para makita kung sino yung online
@@ -51,14 +52,33 @@ function Home(){
 			}else { setUsers([]); }
 		});
 
+		// get requests
+		const requestRef = ref(db, (`friendRequests/${user.uid}`));
+		const unsubscribeRequests = onValue(requestRef, (snapshot) =>{
+			if(snapshot.exists()){
+				const data = snapshot.val();
+
+				const incomingList = Object.entries(data)
+					.filter(([_, value]) => value?.status === 'received')
+					.map(([senderUid, value]) => ({
+						senderUid,
+						timestamp: value.timestamp,
+					}));
+				
+				setFriendRequests(incomingList);
+			}else{ setFriendRequests([]); }
+		});
+
+
+
 		return () => {
 			if (auth.currentUser) {
         set(userStatusRef, false);
       }
 			unsubscribeConnected();
 			unsubscribes();
+			unsubscribeRequests();
 		};
-
 	}, [user?.uid, db]);
 
 
@@ -104,11 +124,11 @@ function Home(){
 
 			
 			<main className={`relative h-dvh bg-zinc-950 overflow-hidden py-1.5 px-1.5 sm:py-3.5 flex ${isMobile ? 'ml-0' : isSidebarOpen ? "ml-76" : "ml-18"}`}>
-				<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} isMobile={isMobile} sidebarHidden={sidebarHidden}/>
+				<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} isMobile={isMobile} sidebarHidden={sidebarHidden} friendRequests={friendRequests}/>
 
 				<aside className={`w-full lg:w-96 xl:w-md shrink-0 h-full p-3 overflow-hidden rounded-lg bg-zinc-800 ${activeChat ? "hidden lg:flex lg:flex-col" : "flex flex-col"}`}>
 					{/* Outlet renders <Chats /> || <Contacts/> */}
-					<Outlet context={{ activeChat, setActiveChat, title, setTitle, openModal, setOpenModal }}/>
+					<Outlet context={{ activeChat, setActiveChat, title, setTitle, openModal, setOpenModal, friendRequests, setFriendRequests }}/>
 				</aside>
 
 				<section className={`h-full bg-zinc-800 grow overflow-hidden rounded-lg md:mx-2 min-w-0 ${activeChat ? "flex flex-col w-full" : "hidden md:flex lg:flex-col"}`}>

@@ -71,7 +71,7 @@ export default function FriendList({userFriends, users, user, db, filterType = '
 					)}
 				</>
 			) : (
-				<div className="flex flex-col justify-center w-full gap-y-1 overflow-scroll scrollbar-none">
+				<div className="flex flex-col justify-center w-full gap-y-1 ">
 					{filteredFriends.map((friendUid) =>{
 						const friendData = users[friendUid];
 						const isOnline = Boolean(friendData?.isOnline);
