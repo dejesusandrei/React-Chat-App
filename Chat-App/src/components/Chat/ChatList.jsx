@@ -10,9 +10,9 @@ import noChats from '../../assets/conversation.png'
 import deleteIcon from '../../assets/delete.png'
 import moreIcon from '../../assets/more.png'
 
-export default function ChatList({ friends, users, lastChat, search, db }){
+export default function ChatList({ search, db }){
 	const { user } = useContext(AuthContext);
-	const { activeChat, setActiveChat, setTitle } = useOutletContext() || {};
+	const { activeChat, setActiveChat, setTitle, lastChat, users, friends } = useOutletContext() || {};
 	const [openMenu, setOpenMenu] = useState(null);
 	const navigate = useNavigate();
 	

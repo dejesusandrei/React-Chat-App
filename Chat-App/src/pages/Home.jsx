@@ -21,7 +21,9 @@ function Home(){
 
 	const [users, setUsers] = useState([]);
 	const [title, setTitle] = useState(null);
+	const [lastChat, setLastChat] = useState({});
 	const [friendRequests, setFriendRequests] = useState([]);
+	const [friends, setFriends] = useState([]);
 	const [openModal, setOpenModal] = useState(false);
 
 	// Para makita kung sino yung online
@@ -52,7 +54,7 @@ function Home(){
 			}else { setUsers([]); }
 		});
 
-		// get requests
+		// Get Friend Requests
 		const requestRef = ref(db, (`friendRequests/${user.uid}`));
 		const unsubscribeRequests = onValue(requestRef, (snapshot) =>{
 			if(snapshot.exists()){
@@ -69,7 +71,27 @@ function Home(){
 			}else{ setFriendRequests([]); }
 		});
 
+		// Get the last message of users
+		const userLastChatRef = ref(db, `lastChatMessage/${user.uid}`);
+		const unsubscribeUserLastChat = onValue(userLastChatRef, (snapshot) =>{
+			// stored bilang object para mabilis  hanapin
+			setLastChat(snapshot.exists() ? snapshot.val() : {})
+		});
 
+		// Get all friends
+		const friendsRef = ref(db, `friends/${user.uid}`);
+		const unsubscribeFriends = onValue(friendsRef, (snapshot) =>{
+			if (snapshot.exists()) {
+				const data = snapshot.val();
+				// Hanapin ang UIDs na may status na "friends"
+				const confirmedUIDs = Object.entries(data)
+					.filter(([_, details]) => details.status === "friends" || details === true)
+					.map(([friendUid]) => friendUid);
+				setFriends(confirmedUIDs);
+			} else {
+				setFriends([]);
+			}
+		});
 
 		return () => {
 			if (auth.currentUser) {
@@ -78,6 +100,8 @@ function Home(){
 			unsubscribeConnected();
 			unsubscribes();
 			unsubscribeRequests();
+			unsubscribeUserLastChat();
+			unsubscribeFriends();
 		};
 	}, [user?.uid, db]);
 
@@ -128,16 +152,14 @@ function Home(){
 
 				<aside className={`w-full lg:w-96 xl:w-md shrink-0 h-full p-3 overflow-hidden rounded-lg bg-zinc-800 ${activeChat ? "hidden lg:flex lg:flex-col" : "flex flex-col"}`}>
 					{/* Outlet renders <Chats /> || <Contacts/> */}
-					<Outlet context={{ activeChat, setActiveChat, title, setTitle, openModal, setOpenModal, friendRequests, setFriendRequests }}/>
+					<Outlet context={{ users, activeChat, setActiveChat, title, setTitle, openModal, setOpenModal, friendRequests, setFriendRequests, lastChat, friends }}/>
 				</aside>
 
 				<section className={`h-full bg-zinc-800 grow overflow-hidden rounded-lg md:mx-2 min-w-0 ${activeChat ? "flex flex-col w-full" : "hidden md:flex lg:flex-col"}`}>
 					<ChatWindow activeChat={activeChat} onBack={() => setActiveChat(null)}/>
 				</section>
 
-				{openModal && (
-					<AddFriendModal isOpen={openModal} onClose={() => setOpenModal((prev) => !prev)}/>
-				)}
+				{openModal && (<AddFriendModal isOpen={openModal} onClose={() => setOpenModal((prev) => !prev)}/>)}
 			</main>
 
 			

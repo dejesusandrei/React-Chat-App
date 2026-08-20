@@ -80,7 +80,7 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, side
 						</div> */}
 
 						<NavLink to="/home/chats" className={({ isActive }) =>
-							`flex items-center h-12.5 px-3 rounded-md ${isSidebarOpen? "justify-start gap-3": "justify-center"} 
+							`relative flex items-center h-12.5 px-3 rounded-md ${isSidebarOpen? "justify-start gap-3": "justify-center"} 
 							${isActive? "bg-zinc-800": "hover:bg-zinc-800"}`}>
 								{({ isActive }) => (
 									<>
