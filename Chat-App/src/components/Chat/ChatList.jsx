@@ -12,7 +12,7 @@ import moreIcon from '../../assets/more.png'
 
 export default function ChatList({ search, db }){
 	const { user } = useContext(AuthContext);
-	const { activeChat, setActiveChat, setTitle, lastChat, users, friends } = useOutletContext() || {};
+	const { activeChat, setActiveChat, setTitle, lastChat, users, friends, readChats, setReadChats } = useOutletContext() || {};
 	const [openMenu, setOpenMenu] = useState(null);
 	const navigate = useNavigate();
 	
@@ -68,17 +68,6 @@ export default function ChatList({ search, db }){
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, []);
-
-	// Initial State Loader: Binabasa ang na-save na read state sa LocalStorage sa unang pag-load ng page
-	const [readChats, setReadChats] = useState(() =>{
-		if (!user?.uid) return {};
-		try {
-			const save = localStorage.getItem(`readChats_${user.uid}`);
-			return save ? JSON.parse(save) : {};
-		} catch (error) {
-			return {};
-		}
-	});
 
 	// Storage Sync: Ina-update ang LocalStorage tuwing magbabago ang readChats state
 	useEffect(() =>{

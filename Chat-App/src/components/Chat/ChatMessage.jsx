@@ -19,7 +19,7 @@ export default function ChatMessage({messages, activeChat}){
 
 						// Ipakita lang ang oras kung unang message O iba ang sender O lampas 5 mins ang agwat
 						const showTime = i === 0 || prevMsg?.senderId !== msg.senderId ||
-							(msg.timestamp - prevMsg?.timestamp > 5 * 60 * 1000);
+							(msg.timestamp - prevMsg?.timestamp > 10 * 60 * 1000);
 
 						return (
 							<Fragment key={msg.id || i}>

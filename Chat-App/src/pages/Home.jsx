@@ -26,6 +26,17 @@ function Home(){
 	const [friends, setFriends] = useState([]);
 	const [openModal, setOpenModal] = useState(false);
 
+	// Initial State Loader: Binabasa ang na-save na read state sa LocalStorage sa unang pag-load ng page
+	const [readChats, setReadChats] = useState(() =>{
+		if (!user?.uid) return {};
+		try {
+			const save = localStorage.getItem(`readChats_${user.uid}`);
+			return save ? JSON.parse(save) : {};
+		} catch (error) {
+			return {};
+		}
+	});
+
 	// Para makita kung sino yung online
 	useEffect(() =>{
 		if (!user?.uid) return;
@@ -105,7 +116,6 @@ function Home(){
 		};
 	}, [user?.uid, db]);
 
-
 	const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
 		const savedState = localStorage.getItem("sidebarOpen");
 		return savedState !== null ? JSON.parse(savedState) : true;
@@ -120,17 +130,14 @@ function Home(){
 	const isMobile = width < 80;
 	const sidebarHidden = width >= 600;
 	const closeSidebar = width < 1280;
-	
 	useEffect(() =>{
 		if(closeSidebar) setIsSidebarOpen(false);
 	}, [closeSidebar, sidebarHidden]);
 
 	// Dito natin itatago kung sino ang kasalukuyang pino-click na kausap
   const [activeChat, setActiveChat] = useState(null);
-
 	const [searchParams] = useSearchParams();
 	const chatIdFromUrl = searchParams.get('id');
-
 	useEffect(() => {
 		// Kung may ID sa URL at may listahan ka ng users, hanapin at i-set as activeChat
 		if (chatIdFromUrl) {
@@ -142,17 +149,26 @@ function Home(){
 		}
 	}, [chatIdFromUrl, users])
 
+	const totalUnreadChats = users.reduce((acc, friend) => {
+		const chatInfo = lastChat?.[friend.uid];
+		const lastMessageTimestamp = chatInfo?.timestamp;
+		const isSelfSender = chatInfo?.senderId === user.uid;
+		const isFriendSender = Boolean(chatInfo?.senderId) && !isSelfSender;
+		const lastReadTimestamp = readChats[friend.uid];
+
+		const isUnread = isFriendSender && (!lastReadTimestamp || lastMessageTimestamp > lastReadTimestamp)
+		return isUnread ? acc + 1 : acc;
+	}, 0);
+
 	return(
 		<>
-			<title>{`${title ? (`${title} | ReiChat`) : ('Reichat')}`}</title>
-
-			
+			<title>{`${title ? (`${title} | ReiChat`) : ('Reichat')}`}</title>		
 			<main className={`relative h-dvh bg-zinc-950 overflow-hidden py-1.5 px-1.5 sm:py-3.5 flex ${isMobile ? 'ml-0' : isSidebarOpen ? "ml-76" : "ml-18"}`}>
-				<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} isMobile={isMobile} sidebarHidden={sidebarHidden} friendRequests={friendRequests}/>
+				<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} isMobile={isMobile} sidebarHidden={sidebarHidden} friendRequests={friendRequests} totalUnreadChats={totalUnreadChats}/>
 
 				<aside className={`w-full lg:w-96 xl:w-md shrink-0 h-full p-3 overflow-hidden rounded-lg bg-zinc-800 ${activeChat ? "hidden lg:flex lg:flex-col" : "flex flex-col"}`}>
 					{/* Outlet renders <Chats /> || <Contacts/> */}
-					<Outlet context={{ users, activeChat, setActiveChat, title, setTitle, openModal, setOpenModal, friendRequests, setFriendRequests, lastChat, friends }}/>
+					<Outlet context={{ users, activeChat, setActiveChat, title, setTitle, openModal, setOpenModal, friendRequests, setFriendRequests, lastChat, friends, readChats, setReadChats }}/>
 				</aside>
 
 				<section className={`h-full bg-zinc-800 grow overflow-hidden rounded-lg md:mx-2 min-w-0 ${activeChat ? "flex flex-col w-full" : "hidden md:flex lg:flex-col"}`}>
@@ -162,7 +178,6 @@ function Home(){
 				{openModal && (<AddFriendModal isOpen={openModal} onClose={() => setOpenModal((prev) => !prev)}/>)}
 			</main>
 
-			
 		</>
 	);
 }

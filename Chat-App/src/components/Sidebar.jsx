@@ -21,7 +21,7 @@ import settings from '../assets/setting.png'
 import logout from '../assets/logout.png'
 
 
-export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, sidebarHidden, friendRequests}) {
+export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, sidebarHidden, friendRequests, totalUnreadChats}) {
 	const { user } = useContext(AuthContext);
 	const navigate = useNavigate();
 	const auth = getAuth(app);
@@ -88,6 +88,10 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, side
 												<img src={isActive ? chatHover : chat} alt="Chats" />
 										</div>
 										{isSidebarOpen && (<p className={isActive ? "text-white font-semibold" : "text-gray-300 font-semibold"}>Chats</p>)}
+										{totalUnreadChats > 0 && (<span 
+											className={`absolute flex items-center ${isSidebarOpen ? 'bottom-4 right-1 min-w-5 h-5 text-[11px]' : 'bottom-2 right-1 min-w-4 h-4 text-[10px]'} justify-center pr-0.5 font-bold text-white bg-red-500 rounded-full`}>
+												{totalUnreadChats > 99 ? '99+' : totalUnreadChats}
+										</span>)}	
 									</>
 							)}
 						</NavLink>
@@ -101,7 +105,7 @@ export default function Sidebar({isSidebarOpen, setIsSidebarOpen, isMobile, side
 												<img src={isActive ? contactHover : contact} alt="Contacts" />
 										</div>
 										{isSidebarOpen && (<p className={isActive ? "text-white font-semibold" : "text-gray-300 font-semibold"}>Contacts</p>)}
-										{friendRequests.length > 0 && (<span className={`absolute flex items-center ${isSidebarOpen ? 'bottom-4 right-1' : 'bottom-2 right-1'} justify-center min-w-4 h-4 pr-0.5 text-[11px] font-bold text-white bg-red-500 rounded-full`}>{friendRequests.length}</span>)}	
+										{friendRequests.length > 0 && (<span className={`absolute flex items-center ${isSidebarOpen ? 'bottom-4 right-1 min-w-5 h-5 text-[11px]' : 'bottom-2 right-1 min-w-4 h-4 text-[10px]'} justify-center pr-0.5 font-bold text-white bg-red-500 rounded-full`}>{friendRequests.length}</span>)}	
 									</>
 							)}
 						</NavLink>
